@@ -1,7 +1,7 @@
 // Navigation configuration with custom transitions
 import React from 'react';
 import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
 import { GameTheme } from '@/styles';
 import { applyTransition, ScreenTransitions } from '@/styles/transitions';
 import { AnimationDurations, AnimationEasings } from '@/styles/constants';
@@ -63,8 +63,9 @@ export const screenTransitions = {
 
 // Navigation theme configuration
 export const navigationTheme = {
-  dark: true,
+  ...NavigationDarkTheme,
   colors: {
+    ...NavigationDarkTheme.colors,
     primary: GameTheme.colors.primary,
     background: GameTheme.colors.background,
     card: GameTheme.colors.card,
