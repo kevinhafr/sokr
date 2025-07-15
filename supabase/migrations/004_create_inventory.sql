@@ -1,0 +1,1 @@
+-- Migration 004: card_inventory supprimé - on utilise players.available_editions à la place

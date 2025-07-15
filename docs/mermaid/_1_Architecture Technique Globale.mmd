@@ -1,0 +1,52 @@
+graph TB
+    subgraph "Client (React Native)"
+        A[App] --> B[Navigation]
+        B --> C[Screens]
+        C --> D[Components]
+        C --> E[Hooks]
+        C --> F[Contexts]
+
+        F --> G[AuthContext]
+        F --> H[GameContext]
+        F --> I[DeckContext]
+        F --> J[ThemeContext]
+
+        E --> K[useAuth]
+        E --> L[useGame]
+        E --> M[useDeck]
+        E --> N[useGameChannel]
+    end
+
+    subgraph "Services"
+        O[API Service]
+        P[Auth Service]
+        Q[Game Service]
+        R[Card Service]
+        S[Cache Service]
+    end
+
+    subgraph "Backend (Supabase)"
+        T[Edge Functions]
+        U[Database]
+        V[Realtime]
+        W[Storage]
+        X[Auth System]
+    end
+
+    subgraph "External Services"
+        Y[Stripe Payments]
+        Z[Analytics]
+        AA[Sentry]
+    end
+
+    A -.-> O
+    O --> T
+    T --> U
+    V --> N
+    P --> X
+    O --> Y
+    O --> Z
+
+    style A fill:#4CAF50,stroke:#333,stroke-width:2px
+    style U fill:#2196F3,stroke:#333,stroke-width:2px
+    style V fill:#FF9800,stroke:#333,stroke-width:2px

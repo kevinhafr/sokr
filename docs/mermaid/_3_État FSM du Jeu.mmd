@@ -1,0 +1,35 @@
+stateDiagram-v2
+    [*] --> initializing
+    initializing --> waitingForPlayers
+    waitingForPlayers --> coinToss: 2 joueurs
+    coinToss --> placement: Winner déterminé
+
+    state placement {
+        [*] --> placementTeamA
+        placementTeamA --> placementTeamB: Tour suivant
+        placementTeamB --> placementTeamA: Tour suivant
+        placementTeamA --> placementLocked: 8 cartes
+        placementTeamB --> placementLocked: 8 cartes
+    }
+
+    placementLocked --> active: Confirmé
+
+    state active {
+        [*] --> activeTurnA
+        activeTurnA --> activeTurnB: Action terminée
+        activeTurnB --> activeTurnA: Action terminée
+        activeTurnA --> halfTime: Tour 5
+        activeTurnB --> halfTime: Tour 5
+    }
+
+    halfTime --> active: Replacements
+    active --> completed: Tour 10
+
+    waitingForPlayers --> completed: Timeout
+    coinToss --> completed: Abandon
+    placement --> completed: Abandon
+    active --> completed: Abandon
+
+    style initializing fill:#FFC107,stroke:#333,stroke-width:2px
+    style active fill:#4CAF50,stroke:#333,stroke-width:2px
+    style completed fill:#F44336,stroke:#333,stroke-width:2px

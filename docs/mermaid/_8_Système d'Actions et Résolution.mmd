@@ -1,0 +1,43 @@
+flowchart TD
+    A[Action Initiée] --> B{Type d'Action}
+
+    B -->|Pass| C[Vérifier Cible]
+    B -->|Shot| D[Vérifier Zone]
+    B -->|Dribble| E[Vérifier Adjacent]
+
+    C --> F[Roll Initial 1-6]
+    D --> F
+    E --> F
+
+    F --> G{Roll = 1?}
+    G -->|Oui| H[Échec Critique]
+    G -->|Non| I{Roll = 6?}
+
+    I -->|Oui| J[Réussite Critique]
+    I -->|Non| K[Lancer Duel]
+
+    K --> L[Roll Attaquant]
+    K --> M[Roll Défenseur]
+
+    L --> N[+ Stat + Bonus]
+    M --> O[+ Stat + Bonus]
+
+    N --> P{Comparaison}
+    O --> P
+
+    P --> Q[Succès/Échec]
+
+    H --> R[XP: 0]
+    J --> S[XP: Critique]
+    Q --> T[XP: Normal]
+
+    R --> U[Update État]
+    S --> U
+    T --> U
+
+    U --> V[Broadcast Realtime]
+    V --> W[Next Turn]
+
+    style F fill:#FFC107,stroke:#333,stroke-width:2px
+    style J fill:#4CAF50,stroke:#333,stroke-width:2px
+    style H fill:#F44336,stroke:#333,stroke-width:2px

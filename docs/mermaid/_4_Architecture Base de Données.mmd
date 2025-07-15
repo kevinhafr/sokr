@@ -1,0 +1,72 @@
+erDiagram
+    profiles ||--o{ user_players : owns
+    profiles ||--o{ games : plays
+    profiles ||--o{ saved_decks : has
+    profiles ||--o{ purchases : makes
+
+    players ||--o{ user_players : "owned by"
+    players ||--o{ placements : "placed in"
+    players ||--o{ moves : "performs"
+
+    games ||--o{ placements : contains
+    games ||--o{ moves : has
+    games ||--o{ game_events : logs
+
+    bonus_cards ||--o{ game_decks : "used in"
+    pack_types ||--o{ purchases : "bought as"
+
+    profiles {
+        uuid id PK
+        string username UK
+        string email UK
+        int mmr
+        int total_games
+        int wins
+        timestamp ban_until
+    }
+
+    players {
+        uuid id PK
+        string name
+        string position
+        string rarity
+        int shot
+        int dribble
+        int pass
+        int block
+        int cp_cost
+    }
+
+    games {
+        uuid id PK
+        string status
+        uuid player_a FK
+        uuid player_b FK
+        int score_a
+        int score_b
+        int current_turn
+        json game_state
+    }
+
+    user_players {
+        uuid id PK
+        uuid user_id FK
+        uuid player_id FK
+        int level
+        int xp
+        json stat_upgrades
+    }
+
+    moves {
+        uuid id PK
+        uuid game_id FK
+        int turn_number
+        string action_type
+        uuid actor_card_id FK
+        boolean success
+        int initial_roll
+    }
+
+    style profiles fill:#2196F3,stroke:#333,stroke-width:2px
+    style games fill:#FF9800,stroke:#333,stroke-width:2px
+    style players fill:#4CAF50,stroke:#333,stroke-width:2px

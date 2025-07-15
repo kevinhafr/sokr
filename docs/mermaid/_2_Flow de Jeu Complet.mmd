@@ -1,0 +1,52 @@
+flowchart TD
+    A[Lancement App] --> B{Utilisateur Connecté?}
+    B -->|Non| C[Écran Login/Register]
+    B -->|Oui| D[Menu Principal]
+
+    C --> E[Authentification]
+    E -->|Succès| F[Attribution Deck Départ]
+    F --> D
+
+    D --> G{Mode de Jeu}
+    G -->|Quick| H[Deck Automatique]
+    G -->|Draft| I[Sélection Deck]
+
+    H --> J[Matchmaking]
+    I --> J
+
+    J --> K{Adversaire Trouvé?}
+    K -->|Non| L[Création Partie IA]
+    K -->|Oui| M[Coin Toss]
+
+    M --> N[Phase Placement]
+    N --> O[Placement Alterné]
+    O --> P{8 Cartes Placées?}
+    P -->|Non| O
+    P -->|Oui| Q[Jeu Actif]
+
+    Q --> R[Tour Joueur]
+    R --> S{Action}
+    S -->|Pass| T[Résolution Passe]
+    S -->|Shot| U[Résolution Tir]
+    S -->|Dribble| V[Résolution Dribble]
+
+    T --> W[Calcul Duel]
+    U --> W
+    V --> W
+
+    W --> X[Mise à jour État]
+    X --> Y{Fin de Partie?}
+    Y -->|Non| Z{Mi-temps?}
+    Y -->|Oui| AA[Calcul Résultat]
+
+    Z -->|Non| R
+    Z -->|Oui| AB[Replacements]
+    AB --> R
+
+    AA --> AC[MMR Update]
+    AC --> AD[Distribution XP]
+    AD --> AE[Retour Menu]
+
+    style D fill:#4CAF50,stroke:#333,stroke-width:2px
+    style Q fill:#FF9800,stroke:#333,stroke-width:2px
+    style AA fill:#2196F3,stroke:#333,stroke-width:2px

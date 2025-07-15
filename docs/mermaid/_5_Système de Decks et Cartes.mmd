@@ -1,0 +1,44 @@
+graph TB
+    subgraph "Types de Cartes"
+        A[Common<br/>10000 copies<br/>Stats max: 3]
+        B[Limited<br/>1000 copies<br/>Stats max: 3]
+        C[Rare<br/>100 copies<br/>Stats max: 4]
+        D[SuperRare<br/>10 copies<br/>Stats max: 5]
+        E[Unique<br/>1 copie<br/>Stats max: 5]
+    end
+
+    subgraph "Positions"
+        F[Gardien<br/>1 requis]
+        G[Défenseur<br/>2+ requis]
+        H[Milieu<br/>2+ requis]
+        I[Attaquant<br/>2+ requis]
+    end
+
+    subgraph "Contraintes Deck"
+        J[8 cartes total]
+        K[20 CP max titulaires]
+        L[1 Unique max]
+        M[2 SuperRare max]
+        N[3 Rare max]
+    end
+
+    subgraph "Bonus par Rareté"
+        O[Common/Limited: +0]
+        P[Rare/SuperRare: +1]
+        Q[Unique: +2]
+    end
+
+    A --> F
+    B --> G
+    C --> H
+    D --> I
+    E --> F
+
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+
+    style C fill:#64B5F6,stroke:#333,stroke-width:2px
+    style D fill:#BA68C8,stroke:#333,stroke-width:2px
+    style E fill:#FFD54F,stroke:#333,stroke-width:2px

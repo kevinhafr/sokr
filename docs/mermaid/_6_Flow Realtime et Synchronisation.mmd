@@ -1,0 +1,38 @@
+sequenceDiagram
+    participant C1 as Client 1
+    participant CH as Channel Realtime
+    participant API as Edge Functions
+    participant DB as Database
+    participant C2 as Client 2
+
+    C1->>CH: Subscribe(game:123)
+    C2->>CH: Subscribe(game:123)
+
+    rect rgba(200, 200, 200, 0.2)
+        Note over C1,C2: Phase de Jeu
+        C1->>API: makeMove(action)
+        API->>DB: UPDATE games
+        API->>DB: INSERT moves
+        DB-->>CH: postgres_changes
+        CH-->>C1: state_update
+        CH-->>C2: state_update
+    end
+
+    rect rgba(255, 200, 200, 0.2)
+        Note over C1,C2: Optimistic Update
+        C1->>CH: broadcast(action)
+        CH-->>C2: game_action
+        C2->>C2: Update UI
+        API->>DB: Validate & Save
+        DB-->>CH: confirmed
+    end
+
+    rect rgba(200, 255, 200, 0.2)
+        Note over C1,C2: Reconnexion
+        C1--xCH: Disconnect
+        C1->>API: checkGameState
+        API->>DB: SELECT current_state
+        DB-->>API: state
+        API-->>C1: reconnection_data
+        C1->>CH: Subscribe + Sync
+    end

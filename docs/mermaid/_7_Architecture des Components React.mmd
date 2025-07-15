@@ -1,0 +1,65 @@
+graph TD
+    subgraph "App"
+        A[AppProvider]
+        A --> B[NavigationContainer]
+        B --> C[AppNavigator]
+    end
+
+    subgraph "Contexts"
+        D[AuthProvider]
+        E[GameProvider]
+        F[DeckProvider]
+        G[ThemeProvider]
+        H[SoundProvider]
+    end
+
+    subgraph "Screens"
+        I[HomeScreen]
+        J[GameScreen]
+        K[DeckBuilderScreen]
+        L[CollectionScreen]
+        M[ShopScreen]
+    end
+
+    subgraph "Game Components"
+        N[GameBoard]
+        O[PlayerCard]
+        P[BonusCard]
+        Q[Timer]
+        R[ActionButtons]
+        S[Scoreboard]
+    end
+
+    subgraph "Hooks"
+        T[useAuth]
+        U[useGame]
+        V[useDeck]
+        W[useGameChannel]
+    end
+
+    A --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+
+    C --> I
+    C --> J
+    C --> K
+    C --> L
+    C --> M
+
+    J --> N
+    J --> O
+    J --> P
+    J --> Q
+    J --> R
+    J --> S
+
+    J --> U
+    K --> V
+    N --> W
+
+    style A fill:#4CAF50,stroke:#333,stroke-width:2px
+    style J fill:#FF9800,stroke:#333,stroke-width:2px
+    style N fill:#2196F3,stroke:#333,stroke-width:2px
