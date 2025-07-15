@@ -13,7 +13,7 @@
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/xxx"
+      "url": "https://u.expo.dev/86423464-15a5-417a-a28a-895e1faecf31"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -42,7 +42,11 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.VIBRATE",
+        "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.VIBRATE",
         "android.permission.RECORD_AUDIO"
       ]
     },
@@ -70,8 +74,11 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "sokr"
+        "projectId": "86423464-15a5-417a-a28a-895e1faecf31"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
