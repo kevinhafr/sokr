@@ -8,10 +8,12 @@ import {
   TextStyle,
 } from 'react-native';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
+import { useTheme } from '@/contexts/ThemeContext';
+import { GameTheme, ComponentStyles } from '@/styles';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
-  variant?: 'primary' | 'secondary' | 'destructive' | 'ghost';
+  variant?: 'default' | 'primary' | 'secondary' | 'destructive' | 'ghost' | 'premium';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   icon?: React.ReactNode;
@@ -28,6 +30,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const styles = useThemedStyles(createStyles);
+  const theme = useTheme();
   
   const buttonStyle: ViewStyle[] = [
     styles.base,
@@ -50,7 +53,7 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={styles[`${variant}Text`].color} />
+        <ActivityIndicator color={styles[`${variant}Text`]?.color || theme.colors.primary} />
       ) : (
         <>
           {icon}
@@ -71,6 +74,9 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
   },
   
   // Variants
+  default: {
+    backgroundColor: theme.colors.primary,
+  },
   primary: {
     backgroundColor: theme.colors.primary,
   },
@@ -78,29 +84,50 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
     backgroundColor: theme.colors.secondary,
   },
   destructive: {
-    backgroundColor: theme.colors.destructive,
+    backgroundColor: theme.colors.danger,
   },
   ghost: {
     backgroundColor: 'transparent',
     shadowOpacity: 0,
     elevation: 0,
   },
+  premium: {
+    backgroundColor: GameTheme.colors.secondary,
+    borderWidth: 2,
+    borderColor: GameTheme.colors.secondaryLight,
+    ...GameTheme.shadows.lg,
+  },
   
   // Text variants
   text: {
-    fontWeight: theme.theme.typography.fontWeight.semibold,
+    fontWeight: '600',
+  },
+  defaultText: {
+    ...GameTheme.typography.ui.buttonMedium,
+    color: '#0A0E27',
+    ...GameTheme.textShadows.subtle,
   },
   primaryText: {
-    color: theme.colors.primaryForeground,
+    ...GameTheme.typography.ui.buttonMedium,
+    color: '#0A0E27',
+    ...GameTheme.textShadows.subtle,
   },
   secondaryText: {
-    color: theme.colors.secondaryForeground,
+    ...GameTheme.typography.ui.buttonMedium,
+    color: '#0A0E27',
   },
   destructiveText: {
-    color: theme.colors.destructiveForeground,
+    ...GameTheme.typography.ui.buttonMedium,
+    color: '#FFFFFF',
   },
   ghostText: {
+    ...GameTheme.typography.ui.buttonSmall,
     color: theme.colors.primary,
+  },
+  premiumText: {
+    ...GameTheme.typography.ui.buttonLarge,
+    color: '#0A0E27',
+    ...GameTheme.textShadows.depth,
   },
   
   // Sizes

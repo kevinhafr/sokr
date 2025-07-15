@@ -5,6 +5,9 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
   Game: { gameId: string };
   Matchmaking: { gameId: string };
+  CoinToss: { gameId: string };
+  DeckBuilder: { mode: 'create' | 'edit'; deckId?: string };
+  DeckSelection: { mode: 'quick' | 'ranked' };
 };
 
 export type AuthStackParamList = {
@@ -14,7 +17,7 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   Home: undefined;
-  Deck: undefined;
+  Decks: undefined;
   Shop: undefined;
   Profile: undefined;
 };

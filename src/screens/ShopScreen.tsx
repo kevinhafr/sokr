@@ -110,7 +110,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     backgroundColor: theme.colors.background,
   },
   content: {
-    paddingBottom: theme.theme.spacing['2xl'],
+    paddingBottom: theme.theme.spacing.xxl,
   },
   header: {
     flexDirection: 'row' as const,
@@ -120,9 +120,10 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     paddingTop: theme.theme.spacing.md,
   },
   title: {
-    fontSize: theme.theme.typography.fontSize['3xl'],
-    fontFamily: theme.theme.typography.fontFamily.sansBold,
-    color: theme.colors.foreground,
+    fontSize: theme.theme.typography.fontSize.xxxl,
+    fontFamily: theme.theme.fonts.bebas,
+    fontWeight: '700',
+    color: theme.colors.text,
   },
   balanceCard: {
     paddingHorizontal: theme.theme.spacing.lg,
@@ -130,12 +131,13 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   balanceLabel: {
     fontSize: theme.theme.typography.fontSize.xs,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
   },
   balanceValue: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
     color: theme.colors.primary,
   },
   section: {
@@ -144,8 +146,9 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   sectionTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
-    color: theme.colors.foreground,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
+    color: theme.colors.text,
     marginBottom: theme.theme.spacing.lg,
   },
   packCard: {
@@ -174,14 +177,15 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   packName: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
-    color: theme.colors.foreground,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
+    color: theme.colors.text,
     marginBottom: theme.theme.spacing.xs,
   },
   packDescription: {
     fontSize: theme.theme.typography.fontSize.sm,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
     marginBottom: theme.theme.spacing.md,
   },
   packButton: {
@@ -193,19 +197,20 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   offerTitle: {
     fontSize: theme.theme.typography.fontSize.lg,
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
     color: theme.colors.primary,
     marginBottom: theme.theme.spacing.xs,
   },
   offerDescription: {
     fontSize: theme.theme.typography.fontSize.base,
-    color: theme.colors.foreground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.text,
+    fontFamily: theme.theme.fonts.geist,
     marginBottom: theme.theme.spacing.sm,
   },
   offerTimer: {
     fontSize: theme.theme.typography.fontSize.sm,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
   },
 });

@@ -82,3 +82,5 @@ src/config/environment.ts
 
 # EAS
 .eas/
+docs/rf-rules.md
+docs/rf-rules.md

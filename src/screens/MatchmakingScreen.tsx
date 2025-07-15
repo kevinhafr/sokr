@@ -12,7 +12,12 @@ import { RootStackParamList } from '../navigation/types';
 import { useThemedStyles } from '../hooks/useThemedStyles';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { Typography, Heading, AnimatedNumber, GlassCard } from '../components/ui';
 import { supabase } from '../services/supabase';
+import { useScreenTransition } from '../navigation/transitions/TransitionHooks';
+import { TransitionWrapper, TransitionOverlay } from '../navigation/transitions/CustomTransitions';
+import { GameTheme } from '../styles';
+import { Animated } from 'react-native';
 
 type MatchmakingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Matchmaking'>;
 type MatchmakingScreenRouteProp = RouteProp<RootStackParamList, 'Matchmaking'>;
@@ -25,6 +30,25 @@ export default function MatchmakingScreen() {
   const [searchTime, setSearchTime] = useState(0);
   const [gameId, setGameId] = useState<string | null>(null);
   const [status, setStatus] = useState<'searching' | 'found' | 'starting'>('searching');
+  const [showTransition, setShowTransition] = useState(false);
+  
+  // Animation portal pour l'entrée
+  const { animatedStyle } = useScreenTransition('scale', {
+    duration: 600,
+  });
+  
+  // Animation de rotation pour l'icône de recherche
+  const rotateAnim = React.useRef(new Animated.Value(0)).current;
+  
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.timing(rotateAnim, {
+        toValue: 1,
+        duration: 3000,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, []);
 
   useEffect(() => {
     // Timer pour le temps de recherche
@@ -104,8 +128,8 @@ export default function MatchmakingScreen() {
 
       if (error) throw error;
 
-      // Naviguer vers l'écran de jeu
-      navigation.replace('Game', { gameId });
+      // Naviguer vers l'écran de coin toss
+      navigation.replace('CoinToss', { gameId });
     } catch (error) {
       console.error('Coin toss error:', error);
       Alert.alert('Erreur', 'Impossible de lancer la pièce');
@@ -223,24 +247,24 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   title: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontWeight: theme.theme.typography.fontWeight.bold,
-    color: theme.colors.foreground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    fontWeight: '700',
+    color: theme.colors.text,
+    fontFamily: theme.theme.fonts.geist,
     marginTop: theme.theme.spacing.lg,
     marginBottom: theme.theme.spacing.sm,
     textAlign: 'center',
   },
   timer: {
-    fontSize: theme.theme.typography.fontSize['2xl'],
-    fontWeight: theme.theme.typography.fontWeight.bold,
+    fontSize: theme.theme.typography.fontSize.xxl,
+    fontWeight: '700',
     color: theme.colors.primary,
-    fontFamily: theme.theme.typography.fontFamily.mono,
+    fontFamily: theme.theme.fonts.mono,
     marginBottom: theme.theme.spacing.lg,
   },
   info: {
     fontSize: theme.theme.typography.fontSize.base,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
     textAlign: 'center',
   },
   coinEmoji: {

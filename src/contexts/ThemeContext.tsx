@@ -2,16 +2,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { theme, ColorScheme, Colors, getColors } from '@/theme';
+import { GameTheme } from '@/styles';
+
+type ColorScheme = 'light' | 'dark';
 
 interface ThemeContextValue {
-  colors: Colors;
+  colors: typeof GameTheme.colors;
   isDark: boolean;
   colorScheme: ColorScheme;
   toggleTheme: () => void;
   setThemeMode: (mode: 'light' | 'dark' | 'auto') => void;
   themeMode: 'light' | 'dark' | 'auto';
-  theme: typeof theme;
+  theme: typeof GameTheme;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -65,7 +67,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     saveThemePreference(mode);
   };
 
-  const colors = getColors(colorScheme);
+  // For now, we'll use the default dark theme colors
+  // In the future, we could switch between different color modes
+  const colors = GameTheme.colors;
   const isDark = colorScheme === 'dark';
 
   const value: ThemeContextValue = {
@@ -75,9 +79,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     toggleTheme,
     setThemeMode: handleSetThemeMode,
     themeMode,
-    theme,
+    theme: GameTheme,
   };
-
+  
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 

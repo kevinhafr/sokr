@@ -43,7 +43,7 @@ export function useMatchmaking(): UseMatchmakingReturn {
     }
   }, [isSearching]);
 
-  const findMatch = useCallback(async (mode: GameMode, deckId?: string) => {
+  const findMatch = useCallback(async (mode: GameMode, deckIdOrCards?: string | string[]) => {
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -60,7 +60,8 @@ export function useMatchmaking(): UseMatchmakingReturn {
       const { data, error } = await supabase.functions.invoke('matchmake', {
         body: {
           mode,
-          deckId,
+          deckId: typeof deckIdOrCards === 'string' ? deckIdOrCards : undefined,
+          cardIds: Array.isArray(deckIdOrCards) ? deckIdOrCards : undefined,
         },
         headers: {
           Authorization: `Bearer ${session.access_token}`,

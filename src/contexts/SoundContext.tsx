@@ -63,16 +63,17 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const preloadSounds = async () => {
-    try {
-      for (const [name, asset] of Object.entries(soundAssets)) {
-        if (name !== 'backgroundMusic') {
-          const { sound } = await Audio.Sound.createAsync(asset);
-          sounds.current[name] = sound;
-        }
-      }
-    } catch (error) {
-      console.error('Error preloading sounds:', error);
-    }
+    // TODO: Uncomment when sound files are added
+    // try {
+    //   for (const [name, asset] of Object.entries(soundAssets)) {
+    //     if (name !== 'backgroundMusic') {
+    //       const { sound } = await Audio.Sound.createAsync(asset);
+    //       sounds.current[name] = sound;
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.error('Error preloading sounds:', error);
+    // }
   };
 
   const playSound = async (soundName: string) => {
@@ -102,18 +103,19 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
   const playBackgroundMusic = async () => {
     if (!settings.sound) return;
 
-    try {
-      if (!backgroundMusic.current) {
-        const { sound } = await Audio.Sound.createAsync(
-          soundAssets.backgroundMusic,
-          { isLooping: true, volume: 0.3 }
-        );
-        backgroundMusic.current = sound;
-      }
-      await backgroundMusic.current.playAsync();
-    } catch (error) {
-      console.error('Error playing background music:', error);
-    }
+    // TODO: Uncomment when background music file is added
+    // try {
+    //   if (!backgroundMusic.current) {
+    //     const { sound } = await Audio.Sound.createAsync(
+    //       soundAssets.backgroundMusic,
+    //       { isLooping: true, volume: 0.3 }
+    //     );
+    //     backgroundMusic.current = sound;
+    //   }
+    //   await backgroundMusic.current.playAsync();
+    // } catch (error) {
+    //   console.error('Error playing background music:', error);
+    // }
   };
 
   const stopBackgroundMusic = async () => {

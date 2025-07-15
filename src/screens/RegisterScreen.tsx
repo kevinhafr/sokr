@@ -22,10 +22,10 @@ export default function RegisterScreen() {
   const navigation = useNavigation<RegisterScreenNavigationProp>();
   const styles = useThemedStyles(createStyles);
   const { isDark } = useTheme();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState(__DEV__ ? 'kevin@ha.fr' : '');
+  const [password, setPassword] = useState(__DEV__ ? '123456' : '');
+  const [confirmPassword, setConfirmPassword] = useState(__DEV__ ? '123456' : '');
+  const [username, setUsername] = useState(__DEV__ ? 'kevin' : '');
   const [isLoading, setIsLoading] = useState(false);
 
   console.log('RegisterScreen render - Form state:', {
@@ -218,10 +218,10 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   subtitle: {
     fontSize: theme.theme.typography.fontSize.lg,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
     textAlign: 'center' as const,
-    marginBottom: theme.theme.spacing['2xl'],
+    marginBottom: theme.theme.spacing.xxl,
   },
   form: {
     width: '100%',
@@ -231,7 +231,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   inputContainer: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    backgroundColor: theme.colors.input,
+    backgroundColor: theme.colors.surface,
     borderRadius: theme.theme.radius.lg,
     paddingHorizontal: theme.theme.spacing.md,
     marginBottom: theme.theme.spacing.md,
@@ -241,9 +241,9 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   emailInput: {
     flex: 1,
     paddingVertical: theme.theme.spacing.md,
-    color: theme.colors.foreground,
+    color: theme.colors.text,
     fontSize: theme.theme.typography.fontSize.base,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    fontFamily: theme.theme.fonts.geist,
   },
   button: {
     marginTop: theme.theme.spacing.sm,
@@ -253,6 +253,6 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     marginTop: theme.theme.spacing.md,
   },
   placeholderColor: {
-    color: theme.colors.mutedForeground,
+    color: theme.colors.textMuted,
   },
 });

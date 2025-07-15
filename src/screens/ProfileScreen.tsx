@@ -10,11 +10,28 @@ import { useNavigation } from '@react-navigation/native';
 import { useThemedStyles } from '../hooks/useThemedStyles';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { Icon } from '../components/ui/Icon';
+import { Typography, Heading, AnimatedNumber, Badge, GlassCard } from '../components/ui';
+import { useScreenTransition, useStaggerAnimation } from '../navigation/transitions/TransitionHooks';
+import { TransitionWrapper } from '../navigation/transitions/CustomTransitions';
+import { GameTheme } from '../styles';
+import { Animated } from 'react-native';
 
 export default function ProfileScreen() {
-  const { profile, logout } = useAuth();
+  const { profile, signOut } = useAuth();
   const navigation = useNavigation();
   const styles = useThemedStyles(createStyles);
+  
+  // Animation de transition menu
+  const { animatedStyle } = useScreenTransition('scale', {
+    duration: 300,
+  });
+  
+  // Animation décalée pour les stats
+  const { getItemStyle } = useStaggerAnimation(6, {
+    staggerDelay: 60,
+    itemDuration: 250,
+  });
 
   const handleLogout = () => {
     Alert.alert(
@@ -26,7 +43,7 @@ export default function ProfileScreen() {
           text: 'Déconnexion',
           style: 'destructive',
           onPress: async () => {
-            await logout();
+            await signOut();
           },
         },
       ]
@@ -44,19 +61,31 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {profile?.username?.charAt(0).toUpperCase() || '?'}
-          </Text>
-        </View>
-        <Text style={styles.username}>{profile?.username || 'Joueur'}</Text>
-        <Text style={styles.joinDate}>Membre depuis janvier 2024</Text>
-      </View>
+      <Animated.View style={animatedStyle}>
+        <TransitionWrapper type="fade">
+          <GlassCard style={styles.header} intensity={30}>
+            <View style={styles.avatar}>
+              <Typography variant="displaySmall" color="#FFFFFF">
+                {profile?.username?.charAt(0).toUpperCase() || '?'}
+              </Typography>
+            </View>
+            <Heading level={1} shadow="depth">
+              {profile?.username || 'Joueur'}
+            </Heading>
+            <Typography variant="body" color={GameTheme.colors.textSecondary}>
+              Membre depuis janvier 2024
+            </Typography>
+            <Badge variant="premium" size="lg" glow>
+              NIVEAU {profile?.level || 1}
+            </Badge>
+          </GlassCard>
+        </TransitionWrapper>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Statistiques</Text>
-        <View style={styles.statsGrid}>
+        <View style={styles.section}>
+          <TransitionWrapper type="slide" delay={100}>
+            <Heading level={2}>Statistiques</Heading>
+          </TransitionWrapper>
+          <View style={styles.statsGrid}>
           {stats.map((stat, index) => (
             <Card key={index} variant="default" style={styles.statCard}>
               <Text style={styles.statValue}>{stat.value}</Text>
@@ -70,15 +99,21 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Succès</Text>
         <View style={styles.achievements}>
           <Card variant="outlined" style={styles.achievementCard}>
-            <Text style={styles.achievementEmoji}>🏆</Text>
+            <View style={styles.achievementIcon}>
+              <Icon name="trophy" size={32} color={styles.achievementIconColor.color} />
+            </View>
             <Text style={styles.achievementName}>Premier but</Text>
           </Card>
           <Card variant="outlined" style={styles.achievementCard}>
-            <Text style={styles.achievementEmoji}>⚡</Text>
+            <View style={styles.achievementIcon}>
+              <Icon name="lightning" size={32} color={styles.achievementIconColor.color} />
+            </View>
             <Text style={styles.achievementName}>10 victoires</Text>
           </Card>
           <Card variant="outlined" style={styles.achievementCard}>
-            <Text style={styles.achievementEmoji}>🎯</Text>
+            <View style={styles.achievementIcon}>
+              <Icon name="target" size={32} color={styles.achievementIconColor.color} />
+            </View>
             <Text style={styles.achievementName}>Tir parfait</Text>
           </Card>
         </View>
@@ -110,6 +145,7 @@ export default function ProfileScreen() {
           style={styles.logoutButton}
         />
       </View>
+      </Animated.View>
     </ScrollView>
   );
 }
@@ -120,7 +156,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     backgroundColor: theme.colors.background,
   },
   content: {
-    paddingBottom: theme.theme.spacing['2xl'],
+    paddingBottom: theme.theme.spacing.xxl,
   },
   header: {
     alignItems: 'center' as const,
@@ -139,19 +175,19 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   avatarText: {
     fontSize: 48,
-    fontFamily: theme.theme.typography.fontFamily.sansBold,
-    color: theme.colors.primaryForeground,
+    fontFamily: theme.theme.fonts.bebas,
+    color: '#0A0E27',
   },
   username: {
-    fontSize: theme.theme.typography.fontSize['2xl'],
-    fontFamily: theme.theme.typography.fontFamily.sansBold,
-    color: theme.colors.foreground,
+    fontSize: theme.theme.typography.fontSize.xxl,
+    fontFamily: theme.theme.fonts.bebas,
+    color: theme.colors.text,
     marginBottom: theme.theme.spacing.xs,
   },
   joinDate: {
     fontSize: theme.theme.typography.fontSize.sm,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
   },
   section: {
     paddingHorizontal: theme.theme.spacing.lg,
@@ -159,8 +195,9 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   sectionTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
-    color: theme.colors.foreground,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
+    color: theme.colors.text,
     marginBottom: theme.theme.spacing.lg,
   },
   statsGrid: {
@@ -175,15 +212,16 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     alignItems: 'center' as const,
   },
   statValue: {
-    fontSize: theme.theme.typography.fontSize['2xl'],
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
+    fontSize: theme.theme.typography.fontSize.xxl,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
     color: theme.colors.primary,
     marginBottom: theme.theme.spacing.xs,
   },
   statLabel: {
     fontSize: theme.theme.typography.fontSize.sm,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
   },
   achievements: {
     flexDirection: 'row' as const,
@@ -194,15 +232,18 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     flex: 1,
     alignItems: 'center' as const,
   },
-  achievementEmoji: {
-    fontSize: 36,
+  achievementIcon: {
     marginBottom: theme.theme.spacing.sm,
+  },
+  achievementIconColor: {
+    color: theme.colors.primary,
   },
   achievementName: {
     fontSize: theme.theme.typography.fontSize.sm,
-    color: theme.colors.foreground,
+    color: theme.colors.text,
     textAlign: 'center' as const,
-    fontFamily: theme.theme.typography.fontFamily.sansMedium,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '500',
   },
   settingCard: {
     marginBottom: theme.theme.spacing.sm,

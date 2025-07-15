@@ -185,7 +185,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     backgroundColor: theme.colors.background,
   },
   content: {
-    paddingBottom: theme.theme.spacing['2xl'],
+    paddingBottom: theme.theme.spacing.xxl,
   },
   loadingContainer: {
     flex: 1,
@@ -201,14 +201,14 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     paddingTop: theme.theme.spacing.md,
   },
   title: {
-    fontSize: theme.theme.typography.fontSize['3xl'],
-    fontFamily: theme.theme.typography.fontFamily.sansBold,
-    color: theme.colors.foreground,
+    fontSize: theme.theme.typography.fontSize.xxxl,
+    fontFamily: theme.theme.fonts.bebas,
+    color: theme.colors.text,
   },
   subtitle: {
     fontSize: theme.theme.typography.fontSize.base,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
     marginTop: theme.theme.spacing.xs,
   },
   statsCard: {
@@ -221,14 +221,14 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     alignItems: 'center' as const,
   },
   statValue: {
-    fontSize: theme.theme.typography.fontSize['2xl'],
-    fontFamily: theme.theme.typography.fontFamily.sansBold,
+    fontSize: theme.theme.typography.fontSize.xxl,
+    fontFamily: theme.theme.fonts.bebas,
     color: theme.colors.primary,
   },
   statLabel: {
     fontSize: theme.theme.typography.fontSize.xs,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
     marginTop: theme.theme.spacing.xs,
   },
   section: {
@@ -237,8 +237,9 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   sectionTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
-    color: theme.colors.foreground,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
+    color: theme.colors.text,
     marginBottom: theme.theme.spacing.md,
   },
   cardsGrid: {
@@ -261,11 +262,12 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   cardLevel: {
     fontSize: theme.theme.typography.fontSize.xs,
     color: theme.colors.primary,
-    fontFamily: theme.theme.typography.fontFamily.sansMedium,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '500',
   },
   cardXP: {
     fontSize: theme.theme.typography.fontSize.xs,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
   },
 });

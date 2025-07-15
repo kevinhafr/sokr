@@ -1,3 +1,4 @@
+import './src/utils/polyfills'; // Import polyfills first
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';

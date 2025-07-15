@@ -158,6 +158,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           if (createError) {
             console.error('AuthContext - Error creating profile:', createError);
+            // Check if it's a foreign key constraint error
+            if (createError.code === '23503') {
+              console.error('AuthContext - User does not exist in auth.users. Token may be invalid.');
+              // Sign out the user to force re-authentication
+              await supabase.auth.signOut();
+              dispatch({ type: 'SIGN_OUT' });
+              return;
+            }
             // Don't throw error for RLS policy violations
             // User is still authenticated even if profile creation fails
             if (createError.code === '42501') {

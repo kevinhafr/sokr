@@ -243,8 +243,8 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   loadingText: {
     fontSize: theme.theme.typography.fontSize.lg,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
   },
   errorContainer: {
     flex: 1,
@@ -255,8 +255,8 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   errorText: {
     fontSize: theme.theme.typography.fontSize.lg,
-    color: theme.colors.destructive,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.danger,
+    fontFamily: theme.theme.fonts.geist,
     marginBottom: theme.theme.spacing.lg,
     textAlign: 'center' as const,
   },
@@ -282,8 +282,9 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   turnIndicator: {
     fontSize: theme.theme.typography.fontSize.lg,
-    fontFamily: theme.theme.typography.fontFamily.sansSemiBold,
-    color: theme.colors.foreground,
+    fontFamily: theme.theme.fonts.geist,
+    fontWeight: '600',
+    color: theme.colors.text,
   },
   scoreboardContainer: {
     paddingHorizontal: theme.theme.spacing.md,
@@ -299,8 +300,8 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   phaseTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.typography.fontFamily.sansBold,
-    color: theme.colors.foreground,
+    fontFamily: theme.theme.fonts.bebas,
+    color: theme.colors.text,
     textAlign: 'center' as const,
     marginBottom: theme.theme.spacing.lg,
   },
@@ -311,8 +312,8 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   diceInstruction: {
     fontSize: theme.theme.typography.fontSize.base,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.geist,
     marginBottom: theme.theme.spacing.md,
   },
   actionButtonsContainer: {

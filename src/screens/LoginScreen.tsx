@@ -23,8 +23,8 @@ export default function LoginScreen() {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const styles = useThemedStyles(createStyles);
   const { isDark } = useTheme();
-  const [email, setEmail] = useState(__DEV__ ? 'test@sokr.dev' : '');
-  const [password, setPassword] = useState(__DEV__ ? 'test123456' : '');
+  const [email, setEmail] = useState(__DEV__ ? 'kevin@ha.fr' : '');
+  const [password, setPassword] = useState(__DEV__ ? '123456' : '');
   const [isLoading, setIsLoading] = useState(false);
 
   const clearSession = async () => {
@@ -137,11 +137,6 @@ export default function LoginScreen() {
             style={[styles.button, styles.registerButton]}
           />
 
-          {__DEV__ && (
-            <Text style={styles.devInfo}>
-              🧪 Compte test: test@sokr.dev / test123456
-            </Text>
-          )}
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -156,20 +151,20 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   content: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: theme.theme.spacing.lg,
+    paddingHorizontal: 24,
   },
   logo: {
     width: 280,
     height: 140,
-    marginBottom: theme.theme.spacing.xl,
+    marginBottom: 32,
     alignSelf: 'center' as const,
   },
   subtitle: {
-    fontSize: theme.theme.typography.fontSize.lg,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    fontSize: 18,
+    color: theme.colors.textMuted,
+    fontFamily: 'Geist',
     textAlign: 'center' as const,
-    marginBottom: theme.theme.spacing['2xl'],
+    marginBottom: 48,
   },
   form: {
     width: '100%',
@@ -179,35 +174,34 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   inputContainer: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    backgroundColor: theme.colors.input,
-    borderRadius: theme.theme.radius.lg,
-    paddingHorizontal: theme.theme.spacing.md,
-    marginBottom: theme.theme.spacing.md,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: theme.colors.border,
   },
   emailInput: {
     flex: 1,
-    paddingVertical: theme.theme.spacing.md,
-    color: theme.colors.foreground,
-    fontSize: theme.theme.typography.fontSize.base,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    paddingVertical: 16,
+    color: theme.colors.text,
+    fontSize: 16,
+    fontFamily: 'Geist',
   },
   button: {
-    marginTop: theme.theme.spacing.sm,
-    ...theme.theme.shadows.sm,
+    marginTop: 12,
   },
   registerButton: {
-    marginTop: theme.theme.spacing.md,
+    marginTop: 16,
   },
   devInfo: {
-    fontSize: theme.theme.typography.fontSize.xs,
-    color: theme.colors.mutedForeground,
-    fontFamily: theme.theme.typography.fontFamily.sans,
+    fontSize: 12,
+    color: theme.colors.textMuted,
+    fontFamily: 'Geist',
     textAlign: 'center' as const,
-    marginTop: theme.theme.spacing.xl,
+    marginTop: 32,
   },
   placeholderColor: {
-    color: theme.colors.mutedForeground,
+    color: theme.colors.textMuted,
   },
 });

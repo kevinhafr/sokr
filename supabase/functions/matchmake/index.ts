@@ -5,6 +5,7 @@ import { corsHeaders, handleCors } from '../_shared/cors.ts';
 interface MatchmakeRequest {
   mode: 'quick' | 'draft' | 'friendly';
   deckId?: string;
+  cardIds?: string[];
 }
 
 serve(async (req) => {
@@ -13,7 +14,7 @@ serve(async (req) => {
   if (corsResponse) return corsResponse;
 
   try {
-    const { mode, deckId } = await req.json() as MatchmakeRequest;
+    const { mode, deckId, cardIds } = await req.json() as MatchmakeRequest;
     
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');

@@ -1,6 +1,6 @@
 -- Table des profils utilisateurs
 CREATE TABLE profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   
@@ -33,3 +33,10 @@ CREATE INDEX idx_profiles_username ON profiles(username);
 
 -- Index pour le matchmaking (sans WHERE clause car NOW() n'est pas immutable)
 CREATE INDEX idx_profiles_matchmaking ON profiles(mmr, ban_until);
+
+-- Ajouter la contrainte de clé étrangère après la création
+ALTER TABLE profiles 
+  ADD CONSTRAINT profiles_id_fkey 
+  FOREIGN KEY (id) 
+  REFERENCES auth.users(id) 
+  ON DELETE CASCADE;
