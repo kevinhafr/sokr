@@ -175,19 +175,19 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   avatarText: {
     fontSize: 48,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: '#0A0E27',
   },
   username: {
     fontSize: theme.theme.typography.fontSize.xxl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.xs,
   },
   joinDate: {
     fontSize: theme.theme.typography.fontSize.sm,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
   },
   section: {
     paddingHorizontal: theme.theme.spacing.lg,
@@ -195,7 +195,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   sectionTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.lg,
@@ -213,7 +213,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   statValue: {
     fontSize: theme.theme.typography.fontSize.xxl,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.primary,
     marginBottom: theme.theme.spacing.xs,
@@ -221,7 +221,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   statLabel: {
     fontSize: theme.theme.typography.fontSize.sm,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
   },
   achievements: {
     flexDirection: 'row' as const,
@@ -242,7 +242,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     fontSize: theme.theme.typography.fontSize.sm,
     color: theme.colors.text,
     textAlign: 'center' as const,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '500',
   },
   settingCard: {

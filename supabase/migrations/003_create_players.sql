@@ -41,3 +41,7 @@ ALTER TABLE players ADD CONSTRAINT check_stat_limits CHECK (
 CREATE INDEX idx_players_rarity ON players(rarity);
 CREATE INDEX idx_players_position ON players(position);
 CREATE INDEX idx_players_active ON players(is_active) WHERE is_active = true;
+
+-- Permissions
+GRANT SELECT ON players TO authenticated;
+GRANT UPDATE ON players TO authenticated;

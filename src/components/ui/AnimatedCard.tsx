@@ -228,7 +228,7 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
     backgroundColor: GameTheme.colors.card,
     borderRadius: GameTheme.borderRadius.lg,
     padding: GameTheme.spacing.lg,
-    ...GameTheme.advancedShadows.depth.level3,
+    ...GameTheme.shadows.lg,
   },
   flipCard: {
     position: 'absolute' as const,
@@ -237,7 +237,7 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
     backgroundColor: GameTheme.colors.card,
     borderRadius: GameTheme.borderRadius.lg,
     padding: GameTheme.spacing.lg,
-    ...GameTheme.advancedShadows.depth.level3,
+    ...GameTheme.shadows.lg,
     backfaceVisibility: 'hidden' as const,
   },
   flipCardBack: {

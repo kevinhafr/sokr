@@ -1,6 +1,13 @@
--- Modifier la fonction handle_new_user pour créer automatiquement un deck
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+-- Ajouter une colonne pour marquer si l'utilisateur a reçu ses cartes de départ
+ALTER TABLE profiles 
+ADD COLUMN IF NOT EXISTS starter_cards_received BOOLEAN DEFAULT FALSE;
+
+-- Fonction pour attribuer les cartes au premier login (pas à la création)
+CREATE OR REPLACE FUNCTION public.assign_starter_cards(p_user_id UUID)
+RETURNS void 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
 DECLARE
   starter_card RECORD;
   cards_assigned INTEGER := 0;
@@ -10,7 +17,13 @@ DECLARE
   midfielder_count INTEGER := 0;
   attacker_count INTEGER := 0;
 BEGIN
-  RAISE LOG 'handle_new_user triggered for profile %', NEW.id;
+  -- Vérifier si l'utilisateur a déjà reçu ses cartes
+  IF EXISTS (SELECT 1 FROM profiles WHERE id = p_user_id AND starter_cards_received = TRUE) THEN
+    RAISE LOG 'User % already received starter cards', p_user_id;
+    RETURN;
+  END IF;
+  
+  RAISE LOG 'Assigning starter cards to user % on first login', p_user_id;
   
   -- 1. Assigner 1 gardien aléatoire
   RAISE LOG 'Looking for goalkeepers...';
@@ -21,9 +34,9 @@ BEGIN
     ORDER BY RANDOM()
     LIMIT 1
   LOOP
-    RAISE LOG 'Assigning goalkeeper % to user %', starter_card.id, NEW.id;
+    RAISE LOG 'Assigning goalkeeper % to user %', starter_card.id, p_user_id;
     INSERT INTO public.user_players (user_id, player_id, obtained_at)
-    VALUES (NEW.id, starter_card.id, NOW());
+    VALUES (p_user_id, starter_card.id, NOW());
     
     UPDATE public.players 
     SET available_editions = available_editions - 1
@@ -43,9 +56,9 @@ BEGIN
     ORDER BY RANDOM()
     LIMIT 3
   LOOP
-    RAISE LOG 'Assigning defender % to user %', starter_card.id, NEW.id;
+    RAISE LOG 'Assigning defender % to user %', starter_card.id, p_user_id;
     INSERT INTO public.user_players (user_id, player_id, obtained_at)
-    VALUES (NEW.id, starter_card.id, NOW());
+    VALUES (p_user_id, starter_card.id, NOW());
     
     UPDATE public.players 
     SET available_editions = available_editions - 1
@@ -68,9 +81,9 @@ BEGIN
     ORDER BY RANDOM()
     LIMIT 3
   LOOP
-    RAISE LOG 'Assigning midfielder % to user %', starter_card.id, NEW.id;
+    RAISE LOG 'Assigning midfielder % to user %', starter_card.id, p_user_id;
     INSERT INTO public.user_players (user_id, player_id, obtained_at)
-    VALUES (NEW.id, starter_card.id, NOW());
+    VALUES (p_user_id, starter_card.id, NOW());
     
     UPDATE public.players 
     SET available_editions = available_editions - 1
@@ -91,9 +104,9 @@ BEGIN
     ORDER BY RANDOM()
     LIMIT 4
   LOOP
-    RAISE LOG 'Assigning attacker % to user %', starter_card.id, NEW.id;
+    RAISE LOG 'Assigning attacker % to user %', starter_card.id, p_user_id;
     INSERT INTO public.user_players (user_id, player_id, obtained_at)
-    VALUES (NEW.id, starter_card.id, NOW());
+    VALUES (p_user_id, starter_card.id, NOW());
     
     UPDATE public.players 
     SET available_editions = available_editions - 1
@@ -110,7 +123,7 @@ BEGIN
   -- 5. Créer le premier deck automatiquement avec 8 cartes
   -- Formation 1-2-3-2 (1 gardien, 2 défenseurs, 3 milieux, 2 attaquants)
   IF array_length(deck_cards, 1) = 8 THEN
-    RAISE LOG 'Creating first deck for user % with % cards', NEW.id, array_length(deck_cards, 1);
+    RAISE LOG 'Creating first deck for user % with % cards', p_user_id, array_length(deck_cards, 1);
     
     INSERT INTO public.saved_decks (
       user_id, 
@@ -120,7 +133,7 @@ BEGIN
       is_valid,
       is_favorite
     ) VALUES (
-      NEW.id,
+      p_user_id,
       'Mon premier deck',
       to_jsonb(deck_cards),
       0, -- Le total_cp sera calculé par un trigger ou une fonction
@@ -136,20 +149,41 @@ BEGIN
   RAISE LOG 'Total cards assigned: %', cards_assigned;
   
   IF cards_assigned = 0 THEN
-    RAISE WARNING 'No cards were assigned to user %. Check if players table has available cards.', NEW.id;
+    RAISE WARNING 'No cards were assigned to user %', p_user_id;
   END IF;
+  
+  -- Marquer que l'utilisateur a reçu ses cartes
+  UPDATE profiles 
+  SET starter_cards_received = TRUE
+  WHERE id = p_user_id;
 
-  RETURN NEW;
 EXCEPTION WHEN OTHERS THEN
-  -- En cas d'erreur, logger mais ne pas bloquer la création de l'utilisateur
-  RAISE LOG 'Error in handle_new_user for user %: %', NEW.id, SQLERRM;
-  RETURN NEW;
+  -- En cas d'erreur, logger mais ne pas bloquer
+  RAISE LOG 'Error assigning starter cards to user %: %', p_user_id, SQLERRM;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
+
+-- Fonction pour appeler depuis l'application au premier login
+CREATE OR REPLACE FUNCTION public.check_and_assign_starter_cards()
+RETURNS void 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  -- Cette fonction sera appelée par l'application au login
+  -- L'utilisateur est identifié par auth.uid()
+  PERFORM assign_starter_cards(auth.uid());
+END;
+$$;
+
+-- Donner les permissions pour exécuter cette fonction
+GRANT EXECUTE ON FUNCTION public.check_and_assign_starter_cards() TO authenticated;
 
 -- Fonction pour calculer le total_cp d'un deck
 CREATE OR REPLACE FUNCTION calculate_deck_cp()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+AS $$
 DECLARE
   total_cp INTEGER := 0;
   card_id UUID;
@@ -165,7 +199,7 @@ BEGIN
   NEW.total_cp := total_cp;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Trigger pour calculer automatiquement le total_cp
 CREATE TRIGGER trigger_calculate_deck_cp

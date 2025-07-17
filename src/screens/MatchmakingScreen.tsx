@@ -249,7 +249,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     fontSize: theme.theme.typography.fontSize.xl,
     fontWeight: '700',
     color: theme.colors.text,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     marginTop: theme.theme.spacing.lg,
     marginBottom: theme.theme.spacing.sm,
     textAlign: 'center',
@@ -264,7 +264,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   info: {
     fontSize: theme.theme.typography.fontSize.base,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     textAlign: 'center',
   },
   coinEmoji: {

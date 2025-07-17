@@ -1,23 +1,48 @@
 // Shared constants to avoid circular dependencies
 import { Easing } from 'react-native';
 
-// Core colors used across the theme
+// Core colors - Premium Football App Theme (AAA Studio Quality)
 export const CoreColors = {
-  background: '#0A0E27',
-  surface: '#151A36',
-  card: '#1E2444',
-  primary: '#00FF87',
-  primaryLight: '#33FFB3',
-  secondary: '#FFD700',
-  secondaryLight: '#FFEB3B',
-  danger: '#FF4757',
-  success: '#00D364',
-  warning: '#FFB800',
-  info: '#0099FF',
-  text: '#FFFFFF',
-  textSecondary: '#B8BED9',
-  textMuted: '#7A8299',
-  border: '#2A3152',
+  // Backgrounds - Clean and modern
+  background: '#F8FAFB',        // Light grey background
+  surface: '#FFFFFF',           // Pure white surfaces
+  card: '#FFFFFF',              // White cards with shadows
+  overlay: 'rgba(0,0,0,0.4)',   // Modal overlays
+  
+  // Brand colors - Football inspired
+  primary: '#00B04F',           // FIFA green (grass)
+  primaryLight: '#22C55E',      // Lighter grass green
+  primaryDark: '#059669',       // Darker grass green
+  
+  secondary: '#F59E0B',         // Golden yellow (trophies)
+  secondaryLight: '#FCD34D',    // Light gold
+  secondaryDark: '#D97706',     // Dark gold
+  
+  // Accent colors - Professional blue
+  accent: '#1E40AF',            // Deep blue
+  accentLight: '#3B82F6',       // Light blue
+  accentDark: '#1E3A8A',        // Dark blue
+  
+  // Status colors - Clear and accessible
+  success: '#10B981',           // Emerald green
+  danger: '#EF4444',            // Red
+  warning: '#F59E0B',           // Amber
+  info: '#3B82F6',              // Blue
+  
+  // Text hierarchy - Readable and modern
+  text: '#111827',              // Almost black
+  textSecondary: '#6B7280',     // Medium grey
+  textMuted: '#9CA3AF',         // Light grey
+  textDisabled: '#D1D5DB',      // Very light grey
+  
+  // Borders and dividers - Subtle but defined
+  border: '#E5E7EB',            // Light grey border
+  borderLight: '#F3F4F6',       // Very light border
+  divider: '#E5E7EB',           // Same as border
+  
+  // Special effects
+  shadow: 'rgba(0, 0, 0, 0.1)', // Soft shadows
+  glow: '#00B04F',              // Primary glow
 };
 
 export const AnimationDurations = {

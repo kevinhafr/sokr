@@ -14,7 +14,6 @@ import { AuthStackParamList } from '../navigation/types';
 import { useThemedStyles } from '../hooks/useThemedStyles';
 import { Button } from '../components/ui/Button';
 import { supabase } from '../services/supabase';
-import { useTheme } from '../contexts/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LoginScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Login'>;
@@ -22,7 +21,6 @@ type LoginScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Login'
 export default function LoginScreen() {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const styles = useThemedStyles(createStyles);
-  const { isDark } = useTheme();
   const [email, setEmail] = useState(__DEV__ ? 'kevin@ha.fr' : '');
   const [password, setPassword] = useState(__DEV__ ? '123456' : '');
   const [isLoading, setIsLoading] = useState(false);
@@ -80,10 +78,7 @@ export default function LoginScreen() {
     >
       <View style={styles.content}>
         <Image 
-          source={isDark 
-            ? require('@/assets/logos/white_logo_transparent_background.png')
-            : require('@/assets/logos/dark_logo_transparent_background.png')
-          }
+          source={require('@/assets/logos/white_logo_transparent_background.png')}
           style={styles.logo}
           resizeMode="contain"
         />

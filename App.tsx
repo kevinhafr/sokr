@@ -10,7 +10,7 @@ import { useFonts } from './src/hooks/useFonts';
 import { useAuthDeepLink } from './src/hooks/useAuthDeepLink';
 
 function AppContent() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const fontsLoaded = useFonts();
   useAuthDeepLink(); // Handle magic link authentication
   
@@ -24,7 +24,7 @@ function AppContent() {
   
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar style={isDark ? "light" : "dark"} />
+      <StatusBar style="dark" />
       <RootNavigator />
     </View>
   );

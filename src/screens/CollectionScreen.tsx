@@ -202,13 +202,13 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   title: {
     fontSize: theme.theme.typography.fontSize.xxxl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: theme.colors.text,
   },
   subtitle: {
     fontSize: theme.theme.typography.fontSize.base,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     marginTop: theme.theme.spacing.xs,
   },
   statsCard: {
@@ -222,13 +222,13 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   statValue: {
     fontSize: theme.theme.typography.fontSize.xxl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: theme.colors.primary,
   },
   statLabel: {
     fontSize: theme.theme.typography.fontSize.xs,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     marginTop: theme.theme.spacing.xs,
   },
   section: {
@@ -237,7 +237,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   sectionTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.md,
@@ -262,12 +262,12 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   cardLevel: {
     fontSize: theme.theme.typography.fontSize.xs,
     color: theme.colors.primary,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '500',
   },
   cardXP: {
     fontSize: theme.theme.typography.fontSize.xs,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
   },
 });

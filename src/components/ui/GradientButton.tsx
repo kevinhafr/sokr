@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, TouchableOpacityProps, ViewStyle } from 'react-native';
+import { TouchableOpacity, TouchableOpacityProps, ViewStyle, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import { GameTheme } from '@/styles';
@@ -32,22 +32,22 @@ export function GradientButton({
     
     switch (variant) {
       case 'premium':
-        return GameTheme.gradients.buttonPremium.colors;
+        return GameTheme.gradients.secondary.colors;
       case 'danger':
-        return GameTheme.gradients.buttonDanger.colors;
+        return [GameTheme.colors.danger, GameTheme.colors.danger];
       default:
-        return GameTheme.gradients.buttonPrimary.colors;
+        return GameTheme.gradients.primary.colors;
     }
   };
   
   const getGradientConfig = () => {
     switch (variant) {
       case 'premium':
-        return GameTheme.gradients.buttonPremium;
+        return GameTheme.gradients.secondary;
       case 'danger':
-        return GameTheme.gradients.buttonDanger;
+        return { colors: [GameTheme.colors.danger, GameTheme.colors.danger], start: { x: 0, y: 0 }, end: { x: 1, y: 1 } };
       default:
-        return GameTheme.gradients.buttonPrimary;
+        return GameTheme.gradients.primary;
     }
   };
   
@@ -88,7 +88,7 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
   container: {
     borderRadius: GameTheme.borderRadius.button,
     overflow: 'hidden',
-    ...GameTheme.advancedShadows.depth.level3,
+    ...GameTheme.shadows.lg,
   },
   gradient: {
     flexDirection: 'row' as const,
@@ -99,7 +99,6 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
   text: {
     textTransform: 'uppercase' as const,
     letterSpacing: 1,
-    ...GameTheme.textShadows.subtle,
   },
   icon: {
     marginRight: GameTheme.spacing.xs,
@@ -121,7 +120,7 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
   
   // Effects
   glow: {
-    ...GameTheme.glowEffects.intense,
+    ...GameTheme.shadows.glow,
   },
   disabled: {
     opacity: 0.6,

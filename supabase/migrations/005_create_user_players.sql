@@ -54,3 +54,8 @@ FOR EACH ROW EXECUTE FUNCTION check_level_limits();
 -- Index pour performance
 CREATE INDEX idx_user_players_user ON user_players(user_id);
 CREATE INDEX idx_user_players_level ON user_players(user_id, level);
+
+-- Permissions
+GRANT SELECT ON user_players TO authenticated;
+GRANT INSERT ON user_players TO authenticated;
+GRANT UPDATE ON user_players TO authenticated;

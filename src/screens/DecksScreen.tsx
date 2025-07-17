@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  ScrollView,
-  FlatList,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -26,8 +25,7 @@ import { useScreenTransition, useStaggerAnimation } from '../navigation/transiti
 import { TransitionWrapper } from '../navigation/transitions/CustomTransitions';
 import { Animated } from 'react-native';
 
-const { width: screenWidth } = Dimensions.get('window');
-const cardWidth = (screenWidth - 48) / 4; // 4 cartes par ligne avec padding
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 type DecksScreenNavigationProp = StackNavigationProp<MainTabParamList, 'Decks'>;
 
@@ -46,30 +44,43 @@ interface DeckWithCards extends SavedDeck {
   cardDetails: any[];
 }
 
+const getPositionColor = (position: string) => {
+  switch (position) {
+    case 'gardien': return GameTheme.colors.goalkeeper;
+    case 'defenseur': return GameTheme.colors.defender;
+    case 'milieu': return GameTheme.colors.midfielder;
+    case 'attaquant': return GameTheme.colors.attacker;
+    default: return GameTheme.colors.textMuted;
+  }
+};
+
 export default function DecksScreen() {
   const navigation = useNavigation<DecksScreenNavigationProp>();
   const { profile } = useAuth();
   const styles = useThemedStyles(createStyles);
   
   const [decks, setDecks] = useState<DeckWithCards[]>([]);
-  const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [currentDeckIndex, setCurrentDeckIndex] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
   
   // Animation de transition
   const { animatedStyle } = useScreenTransition('fade', {
     duration: 300,
   });
-  
-  // Animation pour les cartes du deck sélectionné
-  const { getItemStyle: getCardStyle } = useStaggerAnimation(8, {
-    staggerDelay: 50,
-    itemDuration: 200,
-  });
 
   useEffect(() => {
     loadDecks();
   }, []);
+
+  useEffect(() => {
+    // Recharger les decks quand on revient sur cet écran
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadDecks();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const loadDecks = async () => {
     try {
@@ -88,18 +99,30 @@ export default function DecksScreen() {
       // Pour chaque deck, charger les détails des cartes
       const decksWithCards = await Promise.all(
         (deckData || []).map(async (deck) => {
-          const { data: cardDetails, error: cardsError } = await supabase
-            .from('players')
-            .select('*')
-            .in('id', deck.cards);
+          // Récupérer les détails des cartes avec niveau et XP
+          const { data: userCards, error: cardsError } = await supabase
+            .from('user_players')
+            .select(`
+              *,
+              player:players(*)
+            `)
+            .eq('user_id', profile?.id)
+            .in('player_id', deck.cards);
 
           if (cardsError) {
             console.error('Error loading cards for deck:', cardsError);
             return { ...deck, cardDetails: [] };
           }
 
-          // Trier les cartes par position
-          const sortedCards = (cardDetails || []).sort((a, b) => {
+          // Mapper les données et trier par position
+          const cardDetails = (userCards || []).map(uc => ({
+            ...uc.player,
+            level: uc.level || 1,
+            xp: uc.xp || 0,
+            total_xp: uc.total_xp || 0
+          }));
+
+          const sortedCards = cardDetails.sort((a, b) => {
             const positionOrder = { 'gardien': 0, 'defenseur': 1, 'milieu': 2, 'attaquant': 3 };
             return positionOrder[a.position] - positionOrder[b.position];
           });
@@ -110,18 +133,11 @@ export default function DecksScreen() {
 
       setDecks(decksWithCards);
       
-      // Sélectionner le premier deck favori par défaut
-      const favoriteDeck = decksWithCards.find(d => d.is_favorite);
-      if (favoriteDeck && !selectedDeck) {
-        setSelectedDeck(favoriteDeck.id);
-      }
-      
     } catch (error) {
       console.error('Error loading decks:', error);
       Alert.alert('Erreur', 'Impossible de charger les decks');
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
@@ -179,158 +195,160 @@ export default function DecksScreen() {
     }
   };
 
+
   const renderDeckCard = ({ item, index }: { item: DeckWithCards; index: number }) => {
-    const isSelected = selectedDeck === item.id;
-    
     return (
       <TouchableOpacity
-        onPress={() => setSelectedDeck(item.id)}
-        style={[styles.deckCard, isSelected && styles.selectedDeckCard]}
+        onPress={() => handleEditDeck(item.id)}
+        style={styles.deckCard}
       >
-        <AnimatedCard variant="tilt" autoAnimate={false}>
-          <Card variant={isSelected ? 'elevated' : 'default'} glow={isSelected} style={styles.deckCardContent}>
-          <View style={styles.deckHeader}>
-            <View style={styles.deckInfo}>
-              <Typography variant="h3" color={GameTheme.colors.text}>{item.name}</Typography>
-              <Typography variant="caption" color={GameTheme.colors.textMuted}>
-                {item.cards.length} cartes • {item.total_cp} CP
-              </Typography>
+        <Card variant="elevated" style={styles.deckCardContent}>
+            <View style={styles.deckCardHeader}>
+              <View style={styles.deckInfo}>
+                <Typography variant="h3" numberOfLines={1}>{item.name}</Typography>
+                <Typography variant="caption" color={GameTheme.colors.textMuted}>
+                  {item.cards.length} cartes • {item.total_cp} CP
+                </Typography>
+              </View>
             </View>
-            <TouchableOpacity
-              onPress={() => handleToggleFavorite(item.id, item.is_favorite)}
-              style={styles.favoriteButton}
-            >
-              <Icon 
-                name={item.is_favorite ? 'star' : 'star'} 
-                size={24} 
-                color={item.is_favorite ? '#FFD700' : '#999'} 
-              />
-            </TouchableOpacity>
-          </View>
-          
-          {/* Mini preview des cartes */}
-          <View style={styles.miniCardsContainer}>
-            {item.cardDetails.slice(0, 4).map((card, index) => (
-              <View key={card.id} style={styles.miniCard}>
-                <Typography variant="caption" style={styles.miniCardName}>{card.name.split(' ')[0]}</Typography>
-                <Typography variant="caption" style={styles.miniCardPosition}>{card.position.slice(0, 3).toUpperCase()}</Typography>
+            
+            {/* Players list */}
+            <View style={styles.playersList}>
+              {/* Header */}
+              <View style={[styles.playerRow, styles.headerRow]}>
+                <View style={[styles.positionIndicator, { backgroundColor: 'transparent' }]} />
+                <Typography variant="caption" style={[styles.playerName, styles.headerText]}>
+                  Joueur
+                </Typography>
+                <View style={styles.playerStats}>
+                  <Typography variant="caption" style={[styles.statText, styles.headerText]}>
+                    T/D/P/B
+                  </Typography>
+                  <Typography variant="caption" style={[styles.levelText, styles.headerText]}>
+                    NIV
+                  </Typography>
+                  <Typography variant="caption" style={[styles.xpText, styles.headerText]}>
+                    XP
+                  </Typography>
+                </View>
               </View>
-            ))}
-            {item.cardDetails.length > 4 && (
-              <View style={styles.miniCard}>
-                <Typography variant="caption" style={styles.moreCards}>+{item.cardDetails.length - 4}</Typography>
-              </View>
-            )}
-          </View>
-          
-          <View style={styles.deckActions}>
-            <Button
-              title="Modifier"
-              variant="ghost"
-              size="sm"
-              onPress={() => handleEditDeck(item.id)}
-              style={styles.actionButton}
-            />
-            {decks.length > 1 && (
+              {item.cardDetails.slice(0, 8).map((player, index) => (
+                <View key={player.id} style={styles.playerRow}>
+                  <View style={[styles.positionIndicator, { backgroundColor: getPositionColor(player.position) }]} />
+                  <Typography variant="caption" style={styles.playerName} numberOfLines={1}>
+                    {player.name}
+                  </Typography>
+                  <View style={styles.playerStats}>
+                    <Typography variant="caption" style={styles.statText}>
+                      {player.shot}/{player.dribble}/{player.pass}/{player.block}
+                    </Typography>
+                    <Typography variant="caption" style={styles.levelText}>
+                      {player.level}
+                    </Typography>
+                    <Typography variant="caption" style={styles.xpText}>
+                      {player.xp}
+                    </Typography>
+                  </View>
+                </View>
+              ))}
+            </View>
+            
+            {/* Actions buttons */}
+            <View style={styles.cardActions}>
               <Button
-                title="Supprimer"
-                variant="ghost"
+                title="Modifier"
+                variant="default"
                 size="sm"
-                onPress={() => handleDeleteDeck(item.id)}
-                style={[styles.actionButton, styles.deleteButton]}
+                onPress={() => handleEditDeck(item.id)}
+                style={{ flex: 1 }}
               />
-            )}
-          </View>
+            </View>
           </Card>
-        </AnimatedCard>
       </TouchableOpacity>
     );
   };
 
-  const renderSelectedDeckCards = () => {
-    const deck = decks.find(d => d.id === selectedDeck);
-    if (!deck) return null;
-
-    return (
-      <View style={styles.cardsGrid}>
-        {deck.cardDetails.map((card, index) => (
-          <Animated.View key={card.id} style={[styles.cardContainer, getCardStyle(index)]}>
-            <PlayerCard
-              player={card}
-              size="sm"
-              showStats={false}
-            />
-          </Animated.View>
-        ))}
-      </View>
-    );
-  };
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={styles.primaryColor.color} />
+        <ActivityIndicator size="large" color={GameTheme.colors.primary} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Animated.View style={animatedStyle}>
-        <TransitionWrapper type="fade">
-          <View style={styles.header}>
-            <Heading level={1} shadow="depth">Mes Decks</Heading>
-        <Button
-          title="Nouveau deck"
-          variant="default"
-          size="md"
-          onPress={handleCreateDeck}
-          icon={<Icon name="plus" size={20} color="#FFFFFF" />}
-        />
-          </View>
-        </TransitionWrapper>
-
-        {/* Liste des decks */}
-        <TransitionWrapper type="slide" delay={100}>
-          <FlatList
-        data={decks}
-        renderItem={renderDeckCard}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.decksList}
-        onRefresh={loadDecks}
-        refreshing={refreshing}
-          />
-        </TransitionWrapper>
-
-        {/* Cartes du deck sélectionné */}
-        {selectedDeck && (
-        <View style={styles.selectedDeckSection}>
-          <Heading level={2}>Composition du deck</Heading>
-          {renderSelectedDeckCards()}
-        </View>
-      )}
-
-        {/* Bouton flottant pour créer un deck */}
-        {decks.length === 0 && (
-        <View style={styles.emptyState}>
-          <Icon name="cards" size={64} color={styles.mutedColor.color} />
-          <Typography variant="h2" color={GameTheme.colors.textMuted}>Aucun deck créé</Typography>
-          <BodyText color={GameTheme.colors.textSecondary}>
-            Créez votre premier deck pour commencer à jouer
-          </BodyText>
+    <View style={styles.container}>
+      <Animated.View style={[styles.content, animatedStyle]}>
+        {/* Header fixe */}
+        <View style={styles.header}>
+          <Heading level={1}>Mes Decks</Heading>
           <Button
-            title="Créer mon premier deck"
+            title="Nouveau"
             variant="default"
-            size="lg"
+            size="sm"
             onPress={handleCreateDeck}
-            style={styles.createFirstButton}
+            icon={<Icon name="plus" size={16} color="#FFFFFF" />}
           />
+        </View>
+
+        {/* Liste des decks ou état vide */}
+        {decks.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Icon name="cards" size={64} color={GameTheme.colors.textMuted} />
+            <Typography variant="h2" color={GameTheme.colors.textMuted} style={styles.emptyTitle}>
+              Aucun deck créé
+            </Typography>
+            <BodyText color={GameTheme.colors.textSecondary} style={styles.emptyText}>
+              Créez votre premier deck pour commencer à jouer
+            </BodyText>
+            <Button
+              title="Créer mon premier deck"
+              variant="default"
+              size="lg"
+              onPress={handleCreateDeck}
+              style={styles.createFirstButton}
+            />
+          </View>
+        ) : (
+          <ScrollView 
+            ref={scrollViewRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            style={styles.decksScrollView}
+            contentContainerStyle={styles.decksScrollContent}
+            onScroll={(event) => {
+              const offsetX = event.nativeEvent.contentOffset.x;
+              const index = Math.round(offsetX / screenWidth);
+              setCurrentDeckIndex(index);
+            }}
+            scrollEventThrottle={16}
+          >
+            {decks.map((deck, index) => (
+              <View key={deck.id} style={styles.deckWrapper}>
+                {renderDeckCard({ item: deck, index })}
+              </View>
+            ))}
+          </ScrollView>
+        )}
+
+        {/* Indicateur de pagination */}
+        {decks.length > 1 && (
+          <View style={styles.paginationContainer}>
+            {decks.map((_, index) => (
+              <View 
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  index === currentDeckIndex && styles.paginationDotActive
+                ]}
+              />
+            ))}
           </View>
         )}
       </Animated.View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -339,116 +357,132 @@ const createStyles = (theme: ReturnType<typeof import('../contexts/ThemeContext'
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  content: {
+    flex: 1,
+  },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: theme.colors.background,
   },
   header: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    padding: theme.theme.spacing.lg,
-  },
-  title: {
-    fontSize: theme.theme.typography.fontSize.xxl,
-    fontWeight: '700' as const,
-    color: theme.colors.text,
-  },
-  decksList: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: theme.theme.spacing.xxxl * 2,
     paddingHorizontal: theme.theme.spacing.lg,
-    paddingBottom: theme.theme.spacing.lg,
+    paddingBottom: theme.theme.spacing.md,
+  },
+  decksScrollView: {
+    flex: 1,
+  },
+  decksScrollContent: {
+  },
+  deckWrapper: {
+    width: screenWidth,
+    paddingHorizontal: theme.theme.spacing.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   deckCard: {
-    marginRight: theme.theme.spacing.md,
-    width: 280,
-  },
-  selectedDeckCard: {
-    transform: [{ scale: 1.02 }],
+    width: '100%',
+    maxWidth: 320,
   },
   deckCardContent: {
     padding: theme.theme.spacing.lg,
   },
-  deckHeader: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'flex-start' as const,
-    marginBottom: theme.theme.spacing.md,
+  deckCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: theme.theme.spacing.lg,
   },
   deckInfo: {
     flex: 1,
+    marginRight: theme.theme.spacing.md,
   },
-  deckName: {
-    fontSize: theme.theme.typography.fontSize.lg,
-    fontWeight: '600' as const,
-    color: theme.colors.text,
-    marginBottom: theme.theme.spacing.xs,
+  playersList: {
+    gap: 2,
   },
-  deckStats: {
-    fontSize: theme.theme.typography.fontSize.sm,
-    color: theme.colors.textMuted,
-  },
-  favoriteButton: {
-    padding: theme.theme.spacing.xs,
-  },
-  miniCardsContainer: {
-    flexDirection: 'row' as const,
+  playerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 3,
     gap: theme.theme.spacing.xs,
-    marginBottom: theme.theme.spacing.md,
   },
-  miniCard: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.theme.borderRadius.sm,
-    padding: theme.theme.spacing.xs,
-    alignItems: 'center' as const,
-    minWidth: 50,
+  positionIndicator: {
+    width: 4,
+    height: 16,
+    borderRadius: 2,
   },
-  miniCardName: {
-    fontSize: 10,
-    fontWeight: '500' as const,
-    color: theme.colors.text,
-  },
-  miniCardPosition: {
-    fontSize: 8,
-    color: theme.colors.textMuted,
-  },
-  moreCards: {
-    fontSize: theme.theme.typography.fontSize.sm,
-    fontWeight: '500' as const,
-    color: theme.colors.textMuted,
-  },
-  deckActions: {
-    flexDirection: 'row' as const,
-    gap: theme.theme.spacing.sm,
-  },
-  actionButton: {
+  playerName: {
     flex: 1,
-  },
-  deleteButton: {
-    borderColor: theme.colors.danger,
-  },
-  selectedDeckSection: {
-    padding: theme.theme.spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: theme.theme.typography.fontSize.xl,
-    fontWeight: '600' as const,
+    fontSize: 11,
     color: theme.colors.text,
-    marginBottom: theme.theme.spacing.lg,
   },
-  cardsGrid: {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
-    gap: theme.theme.spacing.md,
+  playerStats: {
+    flexDirection: 'row',
+    gap: theme.theme.spacing.xs,
   },
-  cardContainer: {
-    width: cardWidth,
+  statText: {
+    fontSize: 10,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.mono,
+    minWidth: 45,
+  },
+  levelText: {
+    fontSize: 10,
+    color: theme.colors.primary,
+    fontWeight: 'bold',
+    minWidth: 20,
+    textAlign: 'center',
+  },
+  xpText: {
+    fontSize: 10,
+    color: theme.colors.accent,
+    minWidth: 25,
+    textAlign: 'right',
+  },
+  headerText: {
+    fontWeight: 'bold',
+    color: theme.colors.textSecondary,
+    textTransform: 'uppercase',
+    fontSize: 9,
+  },
+  headerRow: {
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    marginBottom: 2,
+    paddingBottom: 4,
+  },
+  cardActions: {
+    flexDirection: 'row',
+    gap: theme.theme.spacing.sm,
+    marginTop: theme.theme.spacing.md,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: theme.theme.spacing.lg,
+    gap: theme.theme.spacing.xs,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: theme.colors.textMuted,
+    opacity: 0.3,
+  },
+  paginationDotActive: {
+    opacity: 1,
+    backgroundColor: theme.colors.primary,
   },
   emptyState: {
     flex: 1,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: theme.theme.spacing.xxl,
   },
   emptyTitle: {
@@ -456,16 +490,10 @@ const createStyles = (theme: ReturnType<typeof import('../contexts/ThemeContext'
     marginBottom: theme.theme.spacing.sm,
   },
   emptyText: {
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginBottom: theme.theme.spacing.xl,
   },
   createFirstButton: {
     minWidth: 200,
-  },
-  primaryColor: {
-    color: theme.colors.primary,
-  },
-  mutedColor: {
-    color: theme.colors.textMuted,
   },
 });

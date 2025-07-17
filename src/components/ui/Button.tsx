@@ -7,9 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { useThemedStyles } from '@/hooks/useThemedStyles';
-import { useTheme } from '@/contexts/ThemeContext';
-import { GameTheme, ComponentStyles } from '@/styles';
+import { GameTheme } from '@/styles';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -29,22 +27,164 @@ export function Button({
   icon,
   ...props
 }: ButtonProps) {
-  const styles = useThemedStyles(createStyles);
-  const theme = useTheme();
-  
+  const getVariantStyle = (): ViewStyle => {
+    switch (variant) {
+      case 'primary':
+        return {
+          backgroundColor: GameTheme.colors.primary,
+          ...GameTheme.shadows.md,
+        };
+      case 'secondary':
+        return {
+          backgroundColor: GameTheme.colors.secondary,
+          ...GameTheme.shadows.md,
+        };
+      case 'destructive':
+        return {
+          backgroundColor: GameTheme.colors.danger,
+          ...GameTheme.shadows.md,
+        };
+      case 'ghost':
+        return {
+          backgroundColor: 'transparent',
+          borderWidth: 1,
+          borderColor: GameTheme.colors.border,
+        };
+      case 'premium':
+        return {
+          backgroundColor: GameTheme.colors.secondary,
+          borderWidth: 2,
+          borderColor: GameTheme.colors.secondaryLight,
+          ...GameTheme.shadows.lg,
+        };
+      default:
+        return {
+          backgroundColor: GameTheme.colors.primary,
+          ...GameTheme.shadows.md,
+        };
+    }
+  };
+
+  const getTextStyle = (): TextStyle => {
+    const baseStyle = {
+      fontFamily: GameTheme.fonts.heading,
+      fontWeight: GameTheme.fontWeights.semibold,
+      textAlign: 'center' as const,
+    };
+
+    switch (variant) {
+      case 'primary':
+        return {
+          ...baseStyle,
+          color: GameTheme.colors.card,
+        };
+      case 'secondary':
+        return {
+          ...baseStyle,
+          color: GameTheme.colors.card,
+        };
+      case 'destructive':
+        return {
+          ...baseStyle,
+          color: GameTheme.colors.card,
+        };
+      case 'ghost':
+        return {
+          ...baseStyle,
+          color: GameTheme.colors.primary,
+        };
+      case 'premium':
+        return {
+          ...baseStyle,
+          color: GameTheme.colors.card,
+        };
+      default:
+        return {
+          ...baseStyle,
+          color: GameTheme.colors.card,
+        };
+    }
+  };
+
+  const getSizeStyle = (): ViewStyle => {
+    switch (size) {
+      case 'sm':
+        return {
+          paddingHorizontal: GameTheme.spacing.md,
+          paddingVertical: GameTheme.spacing.sm,
+        };
+      case 'md':
+        return {
+          paddingHorizontal: GameTheme.spacing.lg,
+          paddingVertical: GameTheme.spacing.md,
+        };
+      case 'lg':
+        return {
+          paddingHorizontal: GameTheme.spacing.xl,
+          paddingVertical: GameTheme.spacing.lg,
+        };
+      default:
+        return {
+          paddingHorizontal: GameTheme.spacing.lg,
+          paddingVertical: GameTheme.spacing.md,
+        };
+    }
+  };
+
+  const getTextSizeStyle = (): TextStyle => {
+    switch (size) {
+      case 'sm':
+        return {
+          fontSize: GameTheme.typography.fontSize.sm,
+          lineHeight: GameTheme.typography.lineHeight.sm,
+        };
+      case 'md':
+        return {
+          fontSize: GameTheme.typography.fontSize.base,
+          lineHeight: GameTheme.typography.lineHeight.base,
+        };
+      case 'lg':
+        return {
+          fontSize: GameTheme.typography.fontSize.lg,
+          lineHeight: GameTheme.typography.lineHeight.lg,
+        };
+      default:
+        return {
+          fontSize: GameTheme.typography.fontSize.base,
+          lineHeight: GameTheme.typography.lineHeight.base,
+        };
+    }
+  };
+
+  const baseStyle: ViewStyle = {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: GameTheme.borderRadius.button,
+    gap: GameTheme.spacing.xs,
+  };
+
   const buttonStyle: ViewStyle[] = [
-    styles.base,
-    styles[variant],
-    styles[`size_${size}`],
-    disabled && styles.disabled,
+    baseStyle,
+    getVariantStyle(),
+    getSizeStyle(),
+    disabled && { opacity: 0.6 },
     style as ViewStyle,
   ];
-  
+
   const textStyle: TextStyle[] = [
-    styles.text,
-    styles[`${variant}Text`],
-    styles[`size_${size}_text`],
+    getTextStyle(),
+    getTextSizeStyle(),
   ];
+
+  const getLoadingColor = () => {
+    switch (variant) {
+      case 'ghost':
+        return GameTheme.colors.primary;
+      default:
+        return GameTheme.colors.card;
+    }
+  };
 
   return (
     <TouchableOpacity
@@ -53,7 +193,7 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={styles[`${variant}Text`]?.color || theme.colors.primary} />
+        <ActivityIndicator color={getLoadingColor()} />
       ) : (
         <>
           {icon}
@@ -63,99 +203,3 @@ export function Button({
     </TouchableOpacity>
   );
 }
-
-const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles').useTheme>) => ({
-  base: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    borderRadius: theme.theme.radius.lg,
-    ...theme.theme.shadows.sm,
-  },
-  
-  // Variants
-  default: {
-    backgroundColor: theme.colors.primary,
-  },
-  primary: {
-    backgroundColor: theme.colors.primary,
-  },
-  secondary: {
-    backgroundColor: theme.colors.secondary,
-  },
-  destructive: {
-    backgroundColor: theme.colors.danger,
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  premium: {
-    backgroundColor: GameTheme.colors.secondary,
-    borderWidth: 2,
-    borderColor: GameTheme.colors.secondaryLight,
-    ...GameTheme.shadows.lg,
-  },
-  
-  // Text variants
-  text: {
-    fontWeight: '600',
-  },
-  defaultText: {
-    ...GameTheme.typography.ui.buttonMedium,
-    color: '#0A0E27',
-    ...GameTheme.textShadows.subtle,
-  },
-  primaryText: {
-    ...GameTheme.typography.ui.buttonMedium,
-    color: '#0A0E27',
-    ...GameTheme.textShadows.subtle,
-  },
-  secondaryText: {
-    ...GameTheme.typography.ui.buttonMedium,
-    color: '#0A0E27',
-  },
-  destructiveText: {
-    ...GameTheme.typography.ui.buttonMedium,
-    color: '#FFFFFF',
-  },
-  ghostText: {
-    ...GameTheme.typography.ui.buttonSmall,
-    color: theme.colors.primary,
-  },
-  premiumText: {
-    ...GameTheme.typography.ui.buttonLarge,
-    color: '#0A0E27',
-    ...GameTheme.textShadows.depth,
-  },
-  
-  // Sizes
-  size_sm: {
-    paddingHorizontal: theme.theme.spacing.md,
-    paddingVertical: theme.theme.spacing.sm,
-  },
-  size_md: {
-    paddingHorizontal: theme.theme.spacing.lg,
-    paddingVertical: theme.theme.spacing.md,
-  },
-  size_lg: {
-    paddingHorizontal: theme.theme.spacing.xl,
-    paddingVertical: theme.theme.spacing.lg,
-  },
-  
-  // Text sizes
-  size_sm_text: {
-    fontSize: theme.theme.typography.fontSize.sm,
-  },
-  size_md_text: {
-    fontSize: theme.theme.typography.fontSize.base,
-  },
-  size_lg_text: {
-    fontSize: theme.theme.typography.fontSize.lg,
-  },
-  
-  disabled: {
-    opacity: 0.6,
-  },
-});

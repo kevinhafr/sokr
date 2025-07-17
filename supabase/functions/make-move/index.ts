@@ -156,13 +156,11 @@ async function resolveDuel(
   // Calculer les totaux avec mods
   const actorTotal = calculateTotal(actor, request.action, 'attack', {
     baseRoll: Math.floor(Math.random() * 6) + 1,
-    bonusCards: request.bonusCards,
-    formation: getFormationBonus(game, 'attack')
+    bonusCards: request.bonusCards
   });
   
   const defenderTotal = calculateTotal(defender, request.action, 'defense', {
-    baseRoll: Math.floor(Math.random() * 6) + 1,
-    formation: getFormationBonus(game, 'defense')
+    baseRoll: Math.floor(Math.random() * 6) + 1
   });
   
   const success = actorTotal > defenderTotal;
@@ -201,11 +199,6 @@ function calculateTotal(
     modifiers.push({ type: 'rarity', value: rarityBonus });
   }
   
-  // Ajouter bonus formation
-  if (options.formation) {
-    total += options.formation;
-    modifiers.push({ type: 'formation', value: options.formation });
-  }
   
   // Ajouter bonus cartes
   if (options.bonusCards) {

@@ -2,9 +2,6 @@
 import { CoreColors } from './constants';
 
 export const ColorModes = {
-  // Default Dark Mode (Current theme)
-  dark: CoreColors,
-  
   // Tournament Mode - High contrast for competitive play
   tournament: {
     ...CoreColors,
@@ -155,7 +152,7 @@ export const TeamColors = {
 
 // Helper function to apply color mode
 export const applyColorMode = (mode: keyof typeof ColorModes) => {
-  return ColorModes[mode] || ColorModes.dark;
+  return ColorModes[mode] || CoreColors;
 };
 
 // Helper function to blend team colors with game theme

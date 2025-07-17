@@ -14,14 +14,17 @@ ALTER TABLE spending_tracker ENABLE ROW LEVEL SECURITY;
 ALTER TABLE match_history ENABLE ROW LEVEL SECURITY;
 
 -- Politiques pour les profils
-CREATE POLICY "Public profiles viewable" ON profiles
+CREATE POLICY "Profiles are viewable by everyone" ON profiles
   FOR SELECT USING (true);
 
-CREATE POLICY "Users can insert own profile" ON profiles
+CREATE POLICY "Authenticated users can create their profile" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
-CREATE POLICY "Users can update own profile" ON profiles
-  FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can update their own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users cannot delete profiles" ON profiles
+  FOR DELETE USING (false);
 
 -- Politiques pour les joueurs (cartes)
 CREATE POLICY "Players cards are public" ON players
@@ -175,3 +178,10 @@ CREATE POLICY "Admins can manage pack types" ON pack_types
       WHERE id = auth.uid() AND role = 'admin'
     )
   );
+
+-- Donner les permissions nécessaires
+GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
+GRANT ALL ON public.profiles TO postgres, service_role;
+GRANT SELECT ON public.profiles TO anon, authenticated;
+GRANT INSERT, UPDATE ON public.profiles TO authenticated;
+GRANT ALL ON saved_decks TO authenticated;

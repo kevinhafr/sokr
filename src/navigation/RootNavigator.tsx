@@ -82,7 +82,12 @@ export default function RootNavigator() {
                   borderBottomColor: GameTheme.colors.border,
                 },
                 headerTintColor: GameTheme.colors.text,
-                headerTitleStyle: GameTheme.typography.header.h3,
+                headerTitleStyle: {
+                  fontFamily: GameTheme.fonts.heading,
+                  fontSize: GameTheme.typography.fontSize.lg,
+                  fontWeight: GameTheme.fontWeights.semibold,
+                  color: GameTheme.colors.text,
+                },
               }}
             />
             <Stack.Screen 

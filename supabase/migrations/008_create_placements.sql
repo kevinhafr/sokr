@@ -20,3 +20,9 @@ CREATE TABLE placements (
 -- Index pour performance
 CREATE INDEX idx_placements_game ON placements(game_id);
 CREATE INDEX idx_placements_player ON placements(game_id, player_id);
+
+-- Permissions
+GRANT SELECT ON placements TO authenticated;
+GRANT INSERT ON placements TO authenticated;
+GRANT UPDATE ON placements TO authenticated;
+GRANT DELETE ON placements TO authenticated;

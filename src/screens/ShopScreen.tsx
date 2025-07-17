@@ -121,7 +121,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   title: {
     fontSize: theme.theme.typography.fontSize.xxxl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     fontWeight: '700',
     color: theme.colors.text,
   },
@@ -132,11 +132,11 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   balanceLabel: {
     fontSize: theme.theme.typography.fontSize.xs,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
   },
   balanceValue: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.primary,
   },
@@ -146,7 +146,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   sectionTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.lg,
@@ -158,7 +158,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   packImage: {
     width: 100,
     height: 100,
-    borderRadius: theme.theme.radius.lg,
+    borderRadius: theme.theme.borderRadius.lg,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
     marginBottom: theme.theme.spacing.md,
@@ -177,7 +177,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   packName: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.xs,
@@ -185,7 +185,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   packDescription: {
     fontSize: theme.theme.typography.fontSize.sm,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     marginBottom: theme.theme.spacing.md,
   },
   packButton: {
@@ -197,7 +197,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   offerTitle: {
     fontSize: theme.theme.typography.fontSize.lg,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.primary,
     marginBottom: theme.theme.spacing.xs,
@@ -205,12 +205,12 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   offerDescription: {
     fontSize: theme.theme.typography.fontSize.base,
     color: theme.colors.text,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     marginBottom: theme.theme.spacing.sm,
   },
   offerTimer: {
     fontSize: theme.theme.typography.fontSize.sm,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
   },
 });

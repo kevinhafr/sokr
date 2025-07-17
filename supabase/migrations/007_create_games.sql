@@ -47,3 +47,8 @@ CREATE INDEX idx_games_players ON games(player_a, player_b);
 CREATE INDEX idx_games_active ON games(status) WHERE status NOT IN ('completed', 'abandoned');
 CREATE INDEX idx_games_active_players ON games(player_a, player_b) 
   WHERE status NOT IN ('completed', 'abandoned');
+
+-- Permissions
+GRANT SELECT ON games TO authenticated;
+GRANT INSERT ON games TO authenticated;
+GRANT UPDATE ON games TO authenticated;

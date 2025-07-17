@@ -210,7 +210,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   emptyTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.text,
     marginTop: theme.theme.spacing.lg,
@@ -231,7 +231,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   title: {
     fontSize: theme.theme.typography.fontSize.xxl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.xs,
   },
@@ -263,7 +263,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   deckName: {
     fontSize: theme.theme.typography.fontSize.lg,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.xs,

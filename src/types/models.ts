@@ -178,7 +178,6 @@ export interface Move {
 }
 
 export interface MoveModifiers {
-  formation?: number;
   rarity?: number;
   bonus_card?: number;
   stat?: number;

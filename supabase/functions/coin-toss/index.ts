@@ -27,7 +27,11 @@ serve(async (req) => {
     }
 
     // Create Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? 'http://127.0.0.1:54321';
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    
+    if (!supabaseUrl) {
+      throw new Error('Missing SUPABASE_URL configuration');
+    }
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     
     // Use service role key for this operation

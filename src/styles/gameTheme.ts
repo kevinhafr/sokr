@@ -1,65 +1,63 @@
-// Sokr Game Theme - Professional Mobile Game Design System
-import { Typography, FontFamilies, textShadows } from './typography';
-import { Gradients, AnimatedGradients } from './gradients';
-import { ColorModes, EventThemes, TeamColors } from './colorModes';
-import { AdvancedShadows, BlurEffects, BorderEffects, GlowEffects, TransformEffects, CompositeEffects } from './effects';
-import { NotificationStyles } from './notifications';
-import { Animations } from './animations';
+// Sokr Game Theme - AAA Studio Quality Football App
+import { CoreColors } from './constants';
 
 export const GameTheme = {
-  // Color Palette - Dark premium gaming aesthetic
+  // Color Palette - Premium Football App (AAA Studio Quality)
   colors: {
-    // Core backgrounds
-    background: '#0A0E27',      // Deep blue-black
-    surface: '#151A36',         // Card background
-    card: '#1E2444',           // Elevated surface
-    overlay: 'rgba(0,0,0,0.7)', // Modal/overlay
+    // Core backgrounds - Clean and modern
+    background: CoreColors.background,
+    surface: CoreColors.surface,
+    card: CoreColors.card,
+    overlay: CoreColors.overlay,
     
-    // Text hierarchy
-    text: '#FFFFFF',
-    textSecondary: '#B8BED9',
-    textMuted: '#7A8299',
-    textDisabled: '#4A5068',
+    // Text hierarchy - Readable and accessible
+    text: CoreColors.text,
+    textSecondary: CoreColors.textSecondary,
+    textMuted: CoreColors.textMuted,
+    textDisabled: CoreColors.textDisabled,
     
-    // Primary actions & brand
-    primary: '#00FF87',         // Vibrant green - main CTA
-    primaryDark: '#00CC6A',
-    primaryLight: '#33FFB3',
+    // Brand colors - Football inspired
+    primary: CoreColors.primary,
+    primaryLight: CoreColors.primaryLight,
+    primaryDark: CoreColors.primaryDark,
     
-    // Secondary & rewards
-    secondary: '#FFD700',       // Gold - premium/rewards
-    secondaryDark: '#CCAC00',
-    secondaryLight: '#FFEB3B',
+    secondary: CoreColors.secondary,
+    secondaryLight: CoreColors.secondaryLight,
+    secondaryDark: CoreColors.secondaryDark,
     
-    // Game states
-    success: '#00D364',         // Positive actions
-    danger: '#FF4757',          // Errors/warnings
-    info: '#0099FF',           // Information
-    warning: '#FFB800',        // Caution
+    accent: CoreColors.accent,
+    accentLight: CoreColors.accentLight,
+    accentDark: CoreColors.accentDark,
     
-    // Player positions (football specific)
-    goalkeeper: '#FFB800',
-    defender: '#00D364',
-    midfielder: '#0099FF',
-    attacker: '#FF3838',
+    // Status colors - Clear and accessible
+    success: CoreColors.success,
+    danger: CoreColors.danger,
+    warning: CoreColors.warning,
+    info: CoreColors.info,
     
-    // Card rarities
-    rarityCommon: '#B8BED9',
-    rarityRare: '#00B4D8',
-    rarityEpic: '#B744FF',
-    rarityLegendary: '#FFD700',
+    // Football positions (color-coded)
+    goalkeeper: '#8B5CF6',      // Purple
+    defender: '#10B981',        // Green
+    midfielder: '#3B82F6',      // Blue
+    attacker: '#EF4444',        // Red
     
-    // UI elements
-    border: '#2A3152',
-    borderLight: '#3A4162',
-    divider: '#1E2444',
+    // Card rarities - Premium feel
+    rarityCommon: '#6B7280',    // Grey
+    rarityRare: '#3B82F6',      // Blue
+    rarityEpic: '#8B5CF6',      // Purple
+    rarityLegendary: '#F59E0B', // Gold
+    
+    // UI elements - Subtle but defined
+    border: CoreColors.border,
+    borderLight: CoreColors.borderLight,
+    divider: CoreColors.divider,
     
     // Special effects
-    glow: '#00FF87',
-    shimmer: 'rgba(255, 255, 255, 0.1)',
+    shadow: CoreColors.shadow,
+    glow: CoreColors.glow,
   },
   
-  // Spacing system (8pt grid)
+  // Spacing system (8pt grid) - Clean and consistent
   spacing: {
     xxs: 4,
     xs: 8,
@@ -71,9 +69,8 @@ export const GameTheme = {
     xxxl: 64,
   },
   
-  // Typography system - safely defined
+  // Typography system - Modern and readable
   typography: {
-    ...Typography,
     fontSize: {
       xs: 10,
       sm: 12,
@@ -84,12 +81,24 @@ export const GameTheme = {
       xxl: 24,
       xxxl: 32,
     },
+    lineHeight: {
+      xs: 14,
+      sm: 16,
+      base: 20,
+      md: 24,
+      lg: 28,
+      xl: 32,
+      xxl: 36,
+      xxxl: 48,
+    },
   },
+  
+  // Font system - Professional
   fonts: {
-    bebas: 'BebasNeue',
-    geist: 'Geist',
-    system: 'System',
-    mono: 'Menlo',
+    heading: 'Inter-Bold',     // Clean headings
+    body: 'Inter-Regular',     // Readable body text
+    mono: 'SF Mono',           // Code/numbers
+    display: 'Inter-Black',    // Hero text
   },
   fontWeights: {
     regular: '400',
@@ -98,9 +107,8 @@ export const GameTheme = {
     bold: '700',
     black: '900',
   },
-  textShadows,
   
-  // Border radius system
+  // Border radius system - Modern and consistent
   borderRadius: {
     xs: 4,
     sm: 6,
@@ -112,67 +120,56 @@ export const GameTheme = {
     card: 12,
     button: 8,
   },
-  radius: {
-    xs: 4,
-    sm: 6,
-    md: 8,
-    lg: 12,
-    xl: 16,
-    xxl: 24,
-    full: 999,
-    card: 12,
-    button: 8,
-  },
   
-  // Shadow system
+  // Shadow system - Soft and professional
   shadows: {
     none: {},
     sm: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.15,
-      shadowRadius: 3,
-      elevation: 2,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
     },
     md: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 6,
-      elevation: 4,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
     },
     lg: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.25,
-      shadowRadius: 12,
-      elevation: 8,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
     },
     xl: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: 0.3,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.15,
       shadowRadius: 16,
-      elevation: 12,
+      elevation: 8,
     },
     // Special shadows
     card: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.35,
-      shadowRadius: 10,
-      elevation: 10,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+      elevation: 3,
     },
     glow: {
-      shadowColor: '#00FF87',
+      shadowColor: CoreColors.primary,
       shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.5,
-      shadowRadius: 20,
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
       elevation: 0,
     },
   },
   
-  // Animation durations
+  // Animation durations - Smooth and responsive
   animation: {
     fast: 150,
     normal: 300,
@@ -180,7 +177,7 @@ export const GameTheme = {
     verySlow: 1000,
   },
   
-  // Z-index layers
+  // Z-index layers - Organized and clear
   zIndex: {
     base: 0,
     dropdown: 1000,
@@ -191,28 +188,37 @@ export const GameTheme = {
     notification: 1600,
   },
   
-  // Extended theme features
-  gradients: Gradients,
-  animatedGradients: AnimatedGradients,
-  colorModes: ColorModes,
-  eventThemes: EventThemes,
-  teamColors: TeamColors,
-  advancedShadows: AdvancedShadows,
-  blurEffects: BlurEffects,
-  borderEffects: BorderEffects,
-  glowEffects: GlowEffects,
-  transformEffects: TransformEffects,
-  compositeEffects: CompositeEffects,
-  notifications: NotificationStyles,
-  animations: Animations,
+  // Gradients - Modern and subtle
+  gradients: {
+    primary: {
+      colors: [CoreColors.primary, CoreColors.primaryDark],
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 },
+    },
+    secondary: {
+      colors: [CoreColors.secondary, CoreColors.secondaryDark],
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 },
+    },
+    background: {
+      colors: [CoreColors.background, CoreColors.surface],
+      start: { x: 0, y: 0 },
+      end: { x: 0, y: 1 },
+    },
+    card: {
+      colors: [CoreColors.card, CoreColors.surface],
+      start: { x: 0, y: 0 },
+      end: { x: 0, y: 1 },
+    },
+  },
 };
 
 // Type export for TypeScript
 export type Theme = typeof GameTheme;
 
-// Preset component styles with typography
+// Component styles - Clean and consistent
 export const ComponentStyles = {
-  // Premium button style
+  // Primary button - Modern and accessible
   primaryButton: {
     backgroundColor: GameTheme.colors.primary,
     paddingVertical: GameTheme.spacing.md,
@@ -221,91 +227,76 @@ export const ComponentStyles = {
     ...GameTheme.shadows.md,
   },
   primaryButtonText: {
-    fontFamily: 'BebasNeue',
-    fontSize: 20,
-    lineHeight: 24,
-    letterSpacing: 1,
-    textTransform: 'uppercase' as const,
-    color: '#0A0E27',
-    ...textShadows.subtle,
+    fontFamily: GameTheme.fonts.heading,
+    fontSize: GameTheme.typography.fontSize.md,
+    lineHeight: GameTheme.typography.lineHeight.md,
+    fontWeight: GameTheme.fontWeights.semibold,
+    color: GameTheme.colors.card,
+    textAlign: 'center' as const,
   },
   
-  // Card container
+  // Card container - Clean and elevated
   gameCard: {
     backgroundColor: GameTheme.colors.card,
     borderRadius: GameTheme.borderRadius.card,
     padding: GameTheme.spacing.lg,
     ...GameTheme.shadows.card,
+    borderWidth: 1,
+    borderColor: GameTheme.colors.border,
   },
   
-  // Premium gold button
-  premiumButton: {
+  // Secondary button - Golden accent
+  secondaryButton: {
     backgroundColor: GameTheme.colors.secondary,
     paddingVertical: GameTheme.spacing.md,
     paddingHorizontal: GameTheme.spacing.xl,
     borderRadius: GameTheme.borderRadius.button,
-    ...GameTheme.shadows.lg,
-    borderWidth: 2,
-    borderColor: GameTheme.colors.secondaryLight,
+    ...GameTheme.shadows.md,
   },
-  premiumButtonText: {
-    fontFamily: 'BebasNeue',
-    fontSize: 20,
-    lineHeight: 24,
-    letterSpacing: 1,
-    textTransform: 'uppercase' as const,
-    color: '#0A0E27',
-    ...textShadows.depth,
+  secondaryButtonText: {
+    fontFamily: GameTheme.fonts.heading,
+    fontSize: GameTheme.typography.fontSize.md,
+    lineHeight: GameTheme.typography.lineHeight.md,
+    fontWeight: GameTheme.fontWeights.semibold,
+    color: GameTheme.colors.card,
+    textAlign: 'center' as const,
   },
   
-  // Glass effect overlay
-  glassOverlay: {
-    backgroundColor: 'rgba(30, 36, 68, 0.9)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: GameTheme.borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  
-  // Typography presets
+  // Typography presets - Modern and readable
   screenTitle: {
-    fontFamily: 'BebasNeue',
-    fontSize: 48,
-    lineHeight: 55,
-    letterSpacing: 1,
-    textTransform: 'uppercase' as const,
+    fontFamily: GameTheme.fonts.display,
+    fontSize: GameTheme.typography.fontSize.xxxl,
+    lineHeight: GameTheme.typography.lineHeight.xxxl,
+    fontWeight: GameTheme.fontWeights.black,
     color: GameTheme.colors.text,
-    ...textShadows.depth,
+    textAlign: 'center' as const,
   },
   sectionTitle: {
-    fontFamily: 'BebasNeue',
-    fontSize: 32,
-    lineHeight: 36,
-    letterSpacing: 1,
-    textTransform: 'uppercase' as const,
+    fontFamily: GameTheme.fonts.heading,
+    fontSize: GameTheme.typography.fontSize.xxl,
+    lineHeight: GameTheme.typography.lineHeight.xxl,
+    fontWeight: GameTheme.fontWeights.bold,
     color: GameTheme.colors.text,
-    ...textShadows.subtle,
   },
   cardTitle: {
-    fontFamily: 'BebasNeue',
-    fontSize: 24,
-    lineHeight: 28,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase' as const,
+    fontFamily: GameTheme.fonts.heading,
+    fontSize: GameTheme.typography.fontSize.lg,
+    lineHeight: GameTheme.typography.lineHeight.lg,
+    fontWeight: GameTheme.fontWeights.semibold,
     color: GameTheme.colors.text,
   },
   bodyText: {
-    fontFamily: 'Geist',
-    fontSize: 16,
-    lineHeight: 24,
+    fontFamily: GameTheme.fonts.body,
+    fontSize: GameTheme.typography.fontSize.base,
+    lineHeight: GameTheme.typography.lineHeight.base,
     color: GameTheme.colors.textSecondary,
   },
   label: {
-    fontFamily: 'Geist',
-    fontSize: 14,
-    lineHeight: 18,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase' as const,
+    fontFamily: GameTheme.fonts.body,
+    fontSize: GameTheme.typography.fontSize.sm,
+    lineHeight: GameTheme.typography.lineHeight.sm,
+    fontWeight: GameTheme.fontWeights.medium,
     color: GameTheme.colors.textMuted,
+    textTransform: 'uppercase' as const,
   },
 };

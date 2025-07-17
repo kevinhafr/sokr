@@ -244,7 +244,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   loadingText: {
     fontSize: theme.theme.typography.fontSize.lg,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
   },
   errorContainer: {
     flex: 1,
@@ -256,7 +256,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   errorText: {
     fontSize: theme.theme.typography.fontSize.lg,
     color: theme.colors.danger,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     marginBottom: theme.theme.spacing.lg,
     textAlign: 'center' as const,
   },
@@ -282,7 +282,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   turnIndicator: {
     fontSize: theme.theme.typography.fontSize.lg,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     fontWeight: '600',
     color: theme.colors.text,
   },
@@ -300,7 +300,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   phaseTitle: {
     fontSize: theme.theme.typography.fontSize.xl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: theme.colors.text,
     textAlign: 'center' as const,
     marginBottom: theme.theme.spacing.lg,
@@ -313,7 +313,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   diceInstruction: {
     fontSize: theme.theme.typography.fontSize.base,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     marginBottom: theme.theme.spacing.md,
   },
   actionButtonsContainer: {

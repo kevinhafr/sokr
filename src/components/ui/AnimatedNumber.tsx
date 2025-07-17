@@ -62,7 +62,7 @@ export function AnimatedNumber({
         suffix={suffix}
         variant={getTypographyVariant()}
         color={getDefaultColor()}
-        shadow={glow ? 'glow' : 'none'}
+        shadow={glow ? 'glow' : undefined}
       />
     </Animated.View>
   );

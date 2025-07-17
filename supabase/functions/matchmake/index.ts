@@ -32,8 +32,12 @@ serve(async (req) => {
     const token = authHeader.replace('Bearer ', '');
     
     // Create Supabase client with the user's token
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? 'http://127.0.0.1:54321';
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Missing Supabase configuration');
+    }
     
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: {
@@ -124,20 +128,59 @@ serve(async (req) => {
       );
     }
 
-    // Rechercher une partie disponible pour quick/draft
-    const { data: availableGames, error: searchError } = await supabase
+    // D'abord, nettoyer les parties en attente trop anciennes (plus de 5 minutes)
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    await supabase
       .from('games')
-      .select('*')
+      .update({ status: 'abandoned' })
+      .eq('status', 'waitingForPlayers')
+      .lt('created_at', fiveMinutesAgo);
+
+    // Rechercher une partie disponible avec MMR proche (+/- 200 points)
+    const mmrRange = 200;
+    const userMmr = profile.mmr || 1000;
+    
+    let { data: availableGames, error: searchError } = await supabase
+      .from('games')
+      .select(`
+        *,
+        player_a_profile:profiles!player_a(mmr)
+      `)
       .eq('status', 'waitingForPlayers')
       .eq('mode', mode)
       .is('player_b', null)
       .neq('player_a', user.id)
+      .gte('player_a_profile.mmr', userMmr - mmrRange)
+      .lte('player_a_profile.mmr', userMmr + mmrRange)
       .order('created_at', { ascending: true })
       .limit(1);
 
     if (searchError) {
       console.error('Search error:', searchError);
       throw searchError;
+    }
+
+    // Si aucune partie trouvée dans la fourchette MMR, essayer avec une fourchette plus large
+    if ((!availableGames || availableGames.length === 0) && mode === 'quick') {
+      const widerMmrRange = 500;
+      const { data: widerSearch } = await supabase
+        .from('games')
+        .select(`
+          *,
+          player_a_profile:profiles!player_a(mmr)
+        `)
+        .eq('status', 'waitingForPlayers')
+        .eq('mode', mode)
+        .is('player_b', null)
+        .neq('player_a', user.id)
+        .gte('player_a_profile.mmr', userMmr - widerMmrRange)
+        .lte('player_a_profile.mmr', userMmr + widerMmrRange)
+        .order('created_at', { ascending: true })
+        .limit(1);
+        
+      if (widerSearch && widerSearch.length > 0) {
+        availableGames = widerSearch;
+      }
     }
 
     if (availableGames && availableGames.length > 0) {

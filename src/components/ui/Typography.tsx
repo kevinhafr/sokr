@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text as RNText, TextProps as RNTextProps } from 'react-native';
+import { GameTheme } from '@/styles';
 
 type TypographyVariant = 
   | 'displayHero'
@@ -20,231 +21,239 @@ type TypographyVariant =
   | 'currency'
   | 'statLarge'
   | 'statMedium'
-  | 'statSmall';
+  | 'statSmall'
+  | 'buttonLarge'
+  | 'buttonMedium';
 
 interface TypographyProps extends RNTextProps {
   variant?: TypographyVariant;
   color?: string;
-  shadow?: 'glow' | 'depth' | 'subtle' | 'none';
+  shadow?: 'glow' | 'depth' | 'subtle';
   children: React.ReactNode;
 }
 
 export function Typography({
   variant = 'body',
-  color,
-  shadow = 'none',
+  color = GameTheme.colors.text, // Default to theme text color
+  shadow,
   style,
   children,
   ...props
 }: TypographyProps) {
   const getVariantStyle = () => {
     switch (variant) {
-      // Display variants
+      // Display variants - Bold and impactful
       case 'displayHero':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 72,
-          lineHeight: 72 * 1.1,
-          letterSpacing: 2,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.display,
+          fontSize: 64,
+          lineHeight: 70,
+          fontWeight: GameTheme.fontWeights.black,
         };
       case 'displayLarge':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 56,
-          lineHeight: 56 * 1.1,
-          letterSpacing: 1.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.display,
+          fontSize: 48,
+          lineHeight: 52,
+          fontWeight: GameTheme.fontWeights.black,
         };
       case 'displayMedium':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 48,
-          lineHeight: 48 * 1.15,
-          letterSpacing: 1,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.display,
+          fontSize: 36,
+          lineHeight: 40,
+          fontWeight: GameTheme.fontWeights.bold,
         };
       case 'displaySmall':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 36,
-          lineHeight: 36 * 1.2,
-          letterSpacing: 0.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.display,
+          fontSize: 28,
+          lineHeight: 32,
+          fontWeight: GameTheme.fontWeights.bold,
         };
       
-      // Header variants
+      // Header variants - Clear hierarchy
       case 'h1':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 32,
-          lineHeight: 32 * 1.2,
-          letterSpacing: 0.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 24,
+          lineHeight: 28,
+          fontWeight: GameTheme.fontWeights.bold,
         };
       case 'h2':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 28,
-          lineHeight: 28 * 1.2,
-          letterSpacing: 0.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 20,
+          lineHeight: 24,
+          fontWeight: GameTheme.fontWeights.bold,
         };
       case 'h3':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 24,
-          lineHeight: 24 * 1.2,
-          letterSpacing: 0.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 18,
+          lineHeight: 22,
+          fontWeight: GameTheme.fontWeights.semibold,
         };
       case 'h4':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 20,
-          lineHeight: 20 * 1.2,
-          letterSpacing: 0.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 16,
+          lineHeight: 20,
+          fontWeight: GameTheme.fontWeights.semibold,
         };
       
-      // Body variants
+      // Body variants - Readable and comfortable
       case 'bodyLarge':
         return {
-          fontFamily: 'Geist',
+          fontFamily: GameTheme.fonts.body,
           fontSize: 18,
-          lineHeight: 18 * 1.5,
-          letterSpacing: 0,
+          lineHeight: 26,
+          fontWeight: GameTheme.fontWeights.regular,
         };
       case 'body':
         return {
-          fontFamily: 'Geist',
+          fontFamily: GameTheme.fonts.body,
           fontSize: 16,
-          lineHeight: 16 * 1.5,
-          letterSpacing: 0,
+          lineHeight: 24,
+          fontWeight: GameTheme.fontWeights.regular,
         };
       case 'bodySmall':
         return {
-          fontFamily: 'Geist',
+          fontFamily: GameTheme.fonts.body,
           fontSize: 14,
-          lineHeight: 14 * 1.5,
-          letterSpacing: 0,
+          lineHeight: 20,
+          fontWeight: GameTheme.fontWeights.regular,
         };
       
-      // UI variants
+      // UI variants - Functional and clear
       case 'caption':
         return {
-          fontFamily: 'Geist',
+          fontFamily: GameTheme.fonts.body,
           fontSize: 12,
-          lineHeight: 12 * 1.4,
-          letterSpacing: 0.5,
+          lineHeight: 16,
+          fontWeight: GameTheme.fontWeights.regular,
         };
       case 'label':
         return {
-          fontFamily: 'Geist',
+          fontFamily: GameTheme.fonts.body,
           fontSize: 14,
-          lineHeight: 14 * 1.3,
-          letterSpacing: 0.5,
+          lineHeight: 18,
+          fontWeight: GameTheme.fontWeights.medium,
           textTransform: 'uppercase' as const,
+          letterSpacing: 0.5,
         };
       
-      // Gaming variants
+      // Gaming variants - Impactful numbers
       case 'score':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 64,
-          lineHeight: 64 * 1.1,
-          letterSpacing: 1.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.display,
+          fontSize: 56,
+          lineHeight: 60,
+          fontWeight: GameTheme.fontWeights.black,
         };
       case 'timer':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 40,
-          lineHeight: 40 * 1.1,
-          letterSpacing: 1,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.mono,
+          fontSize: 32,
+          lineHeight: 36,
+          fontWeight: GameTheme.fontWeights.bold,
         };
       case 'currency':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 24,
-          lineHeight: 24 * 1.1,
-          letterSpacing: 0.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 20,
+          lineHeight: 24,
+          fontWeight: GameTheme.fontWeights.bold,
         };
       
-      // Stat variants
+      // Stat variants - Data presentation
       case 'statLarge':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 36,
-          lineHeight: 36 * 1.1,
-          letterSpacing: 1,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 28,
+          lineHeight: 32,
+          fontWeight: GameTheme.fontWeights.bold,
         };
       case 'statMedium':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 24,
-          lineHeight: 24 * 1.1,
-          letterSpacing: 0.5,
-          textTransform: 'uppercase' as const,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 20,
+          lineHeight: 24,
+          fontWeight: GameTheme.fontWeights.semibold,
         };
       case 'statSmall':
         return {
-          fontFamily: 'BebasNeue',
-          fontSize: 18,
-          lineHeight: 18 * 1.1,
-          letterSpacing: 0.5,
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 16,
+          lineHeight: 20,
+          fontWeight: GameTheme.fontWeights.semibold,
+        };
+      
+      // Button variants
+      case 'buttonLarge':
+        return {
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 20,
+          lineHeight: 24,
+          fontWeight: GameTheme.fontWeights.bold,
           textTransform: 'uppercase' as const,
+          letterSpacing: 1,
+        };
+      case 'buttonMedium':
+        return {
+          fontFamily: GameTheme.fonts.heading,
+          fontSize: 18,
+          lineHeight: 22,
+          fontWeight: GameTheme.fontWeights.bold,
+          textTransform: 'uppercase' as const,
+          letterSpacing: 0.75,
         };
       
       default:
         return {
-          fontFamily: 'Geist',
+          fontFamily: GameTheme.fonts.body,
           fontSize: 16,
-          lineHeight: 16 * 1.5,
-          letterSpacing: 0,
+          lineHeight: 24,
+          fontWeight: GameTheme.fontWeights.regular,
         };
     }
   };
 
+  const variantStyle = getVariantStyle();
+  
   const getShadowStyle = () => {
-    if (shadow === 'none') return {};
+    if (!shadow) return {};
     
     switch (shadow) {
       case 'glow':
         return {
-          textShadowColor: 'rgba(0, 255, 135, 0.8)',
+          textShadowColor: 'rgba(0, 255, 135, 0.5)',
           textShadowOffset: { width: 0, height: 0 },
-          textShadowRadius: 8,
+          textShadowRadius: 10,
         };
       case 'depth':
         return {
-          textShadowColor: 'rgba(0, 0, 0, 0.8)',
-          textShadowOffset: { width: 0, height: 4 },
-          textShadowRadius: 8,
+          textShadowColor: 'rgba(0, 0, 0, 0.75)',
+          textShadowOffset: { width: 0, height: 2 },
+          textShadowRadius: 4,
         };
       case 'subtle':
         return {
-          textShadowColor: 'rgba(0, 0, 0, 0.5)',
-          textShadowOffset: { width: 0, height: 2 },
-          textShadowRadius: 4,
+          textShadowColor: 'rgba(0, 0, 0, 0.3)',
+          textShadowOffset: { width: 0, height: 1 },
+          textShadowRadius: 2,
         };
       default:
         return {};
     }
   };
-
-  const variantStyle = getVariantStyle();
-  const shadowStyle = getShadowStyle();
   
   return (
     <RNText
       style={[
         variantStyle,
-        shadowStyle,
-        color && { color },
+        { color },
+        getShadowStyle(),
         style,
       ]}
       {...props}
@@ -254,14 +263,14 @@ export function Typography({
   );
 }
 
-// Convenience components
+// Convenience components - Clean and intuitive
 export const DisplayText: React.FC<Omit<TypographyProps, 'variant'> & { variant?: 'hero' | 'large' | 'medium' | 'small' }> = (props) => {
   const variantSuffix = props.variant ? props.variant.charAt(0).toUpperCase() + props.variant.slice(1) : 'Small';
   return <Typography {...props} variant={`display${variantSuffix}` as TypographyVariant} />;
 };
 
-export const Heading: React.FC<Omit<TypographyProps, 'variant'> & { level?: 1 | 2 | 3 | 4 }> = ({ level = 1, ...props }) => (
-  <Typography {...props} variant={`h${level}` as TypographyVariant} />
+export const Heading: React.FC<Omit<TypographyProps, 'variant'> & { level?: 1 | 2 | 3 | 4 }> = ({ level = 1, shadow, ...props }) => (
+  <Typography {...props} shadow={shadow} variant={`h${level}` as TypographyVariant} />
 );
 
 export const BodyText: React.FC<Omit<TypographyProps, 'variant'> & { size?: 'large' | 'regular' | 'small' }> = ({ size = 'regular', ...props }) => {

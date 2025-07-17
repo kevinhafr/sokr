@@ -9,5 +9,5 @@ export function useThemedStyles<T extends StyleSheet.NamedStyles<T>>(
   
   return useMemo(() => {
     return StyleSheet.create(styles(theme));
-  }, [theme.colorScheme]);
+  }, [theme]);
 }

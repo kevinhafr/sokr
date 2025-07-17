@@ -189,7 +189,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('AuthContext - Profile loaded successfully:', profile);
       dispatch({ type: 'SET_USER', payload: { userId, profile } });
       
-      // Debug logs removed - trigger working correctly
+      // Vérifier et assigner les cartes de départ au premier login
+      if (!profile.starter_cards_received) {
+        console.log('AuthContext - Assigning starter cards for first login');
+        try {
+          const { error: cardsError } = await supabase.rpc('check_and_assign_starter_cards');
+          if (cardsError) {
+            console.error('Error assigning starter cards:', cardsError);
+          } else {
+            console.log('Starter cards assigned successfully');
+          }
+        } catch (err) {
+          console.error('Failed to assign starter cards:', err);
+        }
+      }
     } catch (error) {
       console.error('AuthContext - Error in loadUserProfile:', error);
       dispatch({ type: 'SET_ERROR', payload: error as Error });

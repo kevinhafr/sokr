@@ -44,3 +44,8 @@ CREATE TABLE moves (
 CREATE INDEX idx_moves_game_turn ON moves(game_id, turn_number);
 CREATE INDEX idx_moves_validation ON moves(server_validated) WHERE server_validated = false;
 CREATE INDEX idx_moves_game_recent ON moves(game_id, created_at DESC);
+
+-- Permissions
+GRANT SELECT ON moves TO authenticated;
+GRANT INSERT ON moves TO authenticated;
+GRANT UPDATE ON moves TO authenticated;

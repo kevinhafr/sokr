@@ -206,7 +206,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   title: {
     fontSize: theme.theme.typography.fontSize.xxxl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.xxl,
   },
@@ -254,7 +254,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   },
   resultText: {
     fontSize: theme.theme.typography.fontSize.xxl,
-    fontFamily: theme.theme.fonts.bebas,
+    fontFamily: theme.theme.fonts.heading,
     color: theme.colors.text,
     marginBottom: theme.theme.spacing.md,
   },

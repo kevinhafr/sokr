@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, Dimensions } from 'react-native';
+import { View, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import { GameTheme } from '@/styles';
 import { AnimationDurations } from '@/styles/constants';
@@ -178,7 +178,9 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
     right: GameTheme.spacing.lg,
     maxWidth: 480,
     alignSelf: 'center' as const,
-    ...GameTheme.notifications.base,
+    borderRadius: GameTheme.borderRadius.lg,
+    padding: GameTheme.spacing.lg,
+    ...GameTheme.shadows.lg,
   },
   
   // Positions
@@ -194,11 +196,23 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
   },
   
   // Types
-  type_success: GameTheme.notifications.toast.success,
-  type_error: GameTheme.notifications.toast.error,
-  type_warning: GameTheme.notifications.toast.warning,
-  type_info: GameTheme.notifications.toast.info,
-  type_achievement: GameTheme.notifications.toast.achievement,
+  type_success: {
+    backgroundColor: GameTheme.colors.success,
+  },
+  type_error: {
+    backgroundColor: GameTheme.colors.danger,
+  },
+  type_warning: {
+    backgroundColor: GameTheme.colors.warning,
+  },
+  type_info: {
+    backgroundColor: GameTheme.colors.info,
+  },
+  type_achievement: {
+    backgroundColor: GameTheme.colors.secondary,
+    borderWidth: 2,
+    borderColor: GameTheme.colors.secondaryDark,
+  },
   
   content: {
     flexDirection: 'row' as const,

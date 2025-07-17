@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { useThemedStyles } from '@/hooks/useThemedStyles';
 import { GameTheme } from '@/styles';
 
 interface CardProps extends ViewProps {
@@ -18,15 +17,90 @@ export function Card({
   children,
   ...props
 }: CardProps) {
-  const styles = useThemedStyles(createStyles);
-  
+  const getVariantStyle = () => {
+    switch (variant) {
+      case 'default':
+        return {
+          backgroundColor: GameTheme.colors.card,
+          borderRadius: GameTheme.borderRadius.card,
+          borderWidth: 1,
+          borderColor: GameTheme.colors.border,
+          ...GameTheme.shadows.sm,
+        };
+      case 'elevated':
+        return {
+          backgroundColor: GameTheme.colors.card,
+          borderRadius: GameTheme.borderRadius.card,
+          ...GameTheme.shadows.card,
+        };
+      case 'outlined':
+        return {
+          backgroundColor: 'transparent',
+          borderRadius: GameTheme.borderRadius.card,
+          borderWidth: 1,
+          borderColor: GameTheme.colors.border,
+        };
+      case 'premium':
+        return {
+          backgroundColor: GameTheme.colors.card,
+          borderRadius: GameTheme.borderRadius.card,
+          borderWidth: 2,
+          borderColor: GameTheme.colors.secondary,
+          ...GameTheme.shadows.lg,
+        };
+      case 'glass':
+        return {
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          borderRadius: GameTheme.borderRadius.lg,
+          borderWidth: 1,
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          ...GameTheme.shadows.md,
+        };
+      default:
+        return {
+          backgroundColor: GameTheme.colors.card,
+          borderRadius: GameTheme.borderRadius.card,
+          ...GameTheme.shadows.sm,
+        };
+    }
+  };
+
+  const getPaddingStyle = () => {
+    switch (padding) {
+      case 'none':
+        return {};
+      case 'sm':
+        return { padding: GameTheme.spacing.sm };
+      case 'md':
+        return { padding: GameTheme.spacing.md };
+      case 'lg':
+        return { padding: GameTheme.spacing.lg };
+      default:
+        return { padding: GameTheme.spacing.md };
+    }
+  };
+
+  const getGlowStyle = () => {
+    if (!glow) return {};
+    return {
+      shadowColor: GameTheme.colors.primary,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 8,
+    };
+  };
+
+  const variantStyle = getVariantStyle();
+  const paddingStyle = getPaddingStyle();
+  const glowStyle = getGlowStyle();
+
   return (
     <View
       style={[
-        styles.base,
-        styles[variant],
-        padding !== 'none' && styles[`padding_${padding}`],
-        glow && styles.glow,
+        variantStyle,
+        paddingStyle,
+        glowStyle,
         style,
       ]}
       {...props}
@@ -35,58 +109,3 @@ export function Card({
     </View>
   );
 }
-
-const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles').useTheme>) => ({
-  base: {
-    backgroundColor: GameTheme.colors.card,
-    borderRadius: GameTheme.borderRadius.card,
-  },
-  
-  // Variants
-  default: {
-    borderWidth: 1,
-    borderColor: GameTheme.colors.border,
-  },
-  elevated: {
-    ...GameTheme.shadows.card,
-    backgroundColor: GameTheme.colors.surface,
-  },
-  outlined: {
-    borderWidth: 1,
-    borderColor: GameTheme.colors.border,
-    backgroundColor: 'transparent',
-  },
-  premium: {
-    ...GameTheme.shadows.xl,
-    backgroundColor: GameTheme.colors.card,
-    borderWidth: 2,
-    borderColor: GameTheme.colors.secondary,
-  },
-  glass: {
-    backgroundColor: 'rgba(30, 36, 68, 0.9)',
-    borderRadius: GameTheme.borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    ...GameTheme.shadows.lg,
-  },
-  
-  // Padding
-  padding_sm: {
-    padding: GameTheme.spacing.sm,
-  },
-  padding_md: {
-    padding: GameTheme.spacing.md,
-  },
-  padding_lg: {
-    padding: GameTheme.spacing.lg,
-  },
-  
-  // Glow effect
-  glow: {
-    shadowColor: GameTheme.colors.glow,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 20,
-    elevation: 15,
-  },
-});

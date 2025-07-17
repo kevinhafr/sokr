@@ -19,7 +19,10 @@ export const defaultScreenOptions: StackNavigationOptions = {
   },
   headerTintColor: GameTheme.colors.text,
   headerTitleStyle: {
-    ...GameTheme.typography.header.h3,
+    fontFamily: GameTheme.fonts.heading,
+    fontSize: GameTheme.typography.fontSize.lg,
+    fontWeight: GameTheme.fontWeights.semibold,
+    color: GameTheme.colors.text,
   },
   headerBackTitleVisible: false,
 };

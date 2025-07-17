@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { View, ViewProps, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import { GameTheme } from '@/styles';
@@ -46,12 +46,12 @@ export function GlassCard({
   );
 }
 
-const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles').useTheme>) => ({
+const createStyles = (theme: typeof GameTheme) => StyleSheet.create({
   container: {
     borderRadius: GameTheme.borderRadius.lg,
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
     backgroundColor: 'rgba(30, 36, 68, 0.4)',
-    ...GameTheme.advancedShadows.depth.level3,
+    ...GameTheme.shadows.lg,
   },
   blurView: {
     flex: 1,
@@ -65,6 +65,6 @@ const createStyles = (theme: ReturnType<typeof import('@/hooks/useThemedStyles')
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   glow: {
-    ...GameTheme.glowEffects.soft,
+    ...GameTheme.shadows.glow,
   },
 });

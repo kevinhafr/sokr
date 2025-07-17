@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   TextInput,
   Alert,
-  PanResponder,
-  Animated,
   Dimensions,
+  FlatList,
+  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -16,7 +16,7 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
 import { useAuth } from '../contexts/AuthContext';
 import { useThemedStyles } from '../hooks/useThemedStyles';
-import { GameTheme, ComponentStyles } from '../styles';
+import { GameTheme } from '../styles';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Icon } from '../components/ui/Icon';
@@ -24,17 +24,20 @@ import { Typography, Heading } from '../components/ui/Typography';
 import { supabase } from '../services/supabase';
 import { PlayerCard } from '../components/PlayerCard';
 
-const { width: screenWidth } = Dimensions.get('window');
-const cardWidth = (screenWidth - 60) / 4;
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 type DeckBuilderScreenNavigationProp = StackNavigationProp<RootStackParamList, 'DeckBuilder'>;
 type DeckBuilderScreenRouteProp = RouteProp<RootStackParamList, 'DeckBuilder'>;
 
-interface DraggableCard {
-  id: string;
-  player: any;
-  position: { x: number; y: number };
-}
+const getPositionColor = (position: string) => {
+  switch (position) {
+    case 'gardien': return GameTheme.colors.goalkeeper;
+    case 'defenseur': return GameTheme.colors.defender;
+    case 'milieu': return GameTheme.colors.midfielder;
+    case 'attaquant': return GameTheme.colors.attacker;
+    default: return GameTheme.colors.textMuted;
+  }
+};
 
 export default function DeckBuilderScreen() {
   const navigation = useNavigation<DeckBuilderScreenNavigationProp>();
@@ -47,11 +50,7 @@ export default function DeckBuilderScreen() {
   const [availableCards, setAvailableCards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [draggedCard, setDraggedCard] = useState<string | null>(null);
-  const [formation, setFormation] = useState<'2-3-2' | '3-2-2' | '2-2-3'>('2-3-2');
-  
-  const panResponders = useRef<Map<string, any>>(new Map());
-  const animatedValues = useRef<Map<string, Animated.ValueXY>>(new Map());
+  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -61,7 +60,7 @@ export default function DeckBuilderScreen() {
     try {
       setLoading(true);
       
-      // Charger toutes les cartes du joueur
+      // Charger toutes les cartes du joueur avec niveau et XP
       const { data: userCards, error: cardsError } = await supabase
         .from('user_players')
         .select(`
@@ -71,6 +70,15 @@ export default function DeckBuilderScreen() {
         .eq('user_id', profile?.id);
 
       if (cardsError) throw cardsError;
+
+      // Mapper les données pour inclure niveau et XP
+      const cardsWithLevel = userCards?.map(uc => ({
+        ...uc.player,
+        user_player_id: uc.id,
+        level: uc.level || 1,
+        xp: uc.xp || 0,
+        total_xp: uc.total_xp || 0
+      })) || [];
 
       // Si on édite un deck existant, le charger
       if (route.params?.mode === 'edit' && route.params?.deckId) {
@@ -86,28 +94,19 @@ export default function DeckBuilderScreen() {
         
         // Filtrer les cartes du deck et les cartes disponibles
         const deckCardIds = deckData.cards as string[];
-        const deckCardsData = userCards?.filter(uc => 
-          deckCardIds.includes(uc.player_id)
-        ).map(uc => uc.player) || [];
+        const deckCardsData = cardsWithLevel.filter(card => 
+          deckCardIds.includes(card.id)
+        );
         
-        const availableCardsData = userCards?.filter(uc => 
-          !deckCardIds.includes(uc.player_id)
-        ).map(uc => uc.player) || [];
+        const availableCardsData = cardsWithLevel.filter(card => 
+          !deckCardIds.includes(card.id)
+        );
         
         setDeckCards(deckCardsData);
         setAvailableCards(availableCardsData);
-        
-        // Déterminer la formation basée sur les cartes
-        const defCount = deckCardsData.filter(c => c.position === 'defenseur').length;
-        const midCount = deckCardsData.filter(c => c.position === 'milieu').length;
-        const attCount = deckCardsData.filter(c => c.position === 'attaquant').length;
-        
-        if (defCount === 3) setFormation('3-2-2');
-        else if (attCount === 3) setFormation('2-2-3');
-        else setFormation('2-3-2');
       } else {
         // Nouveau deck - toutes les cartes sont disponibles
-        setAvailableCards(userCards?.map(uc => uc.player) || []);
+        setAvailableCards(cardsWithLevel);
       }
       
     } catch (error) {
@@ -118,108 +117,28 @@ export default function DeckBuilderScreen() {
     }
   };
 
-  const createPanResponder = (cardId: string) => {
-    if (!panResponders.current.has(cardId)) {
-      const pan = new Animated.ValueXY();
-      animatedValues.current.set(cardId, pan);
-      
-      const responder = PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
-        
-        onPanResponderGrant: () => {
-          setDraggedCard(cardId);
-          pan.setOffset({
-            x: pan.x._value,
-            y: pan.y._value,
-          });
-        },
-        
-        onPanResponderMove: Animated.event(
-          [null, { dx: pan.x, dy: pan.y }],
-          { useNativeDriver: false }
-        ),
-        
-        onPanResponderRelease: (evt, gestureState) => {
-          pan.flattenOffset();
-          
-          // Déterminer si la carte est dans la zone du deck ou des cartes disponibles
-          const dropY = gestureState.moveY;
-          const isDroppingInDeck = dropY < 400; // Zone du deck
-          
-          handleCardDrop(cardId, isDroppingInDeck);
-          setDraggedCard(null);
-          
-          // Réinitialiser la position
-          Animated.spring(pan, {
-            toValue: { x: 0, y: 0 },
-            useNativeDriver: false,
-          }).start();
-        },
-      });
-      
-      panResponders.current.set(cardId, responder);
+  const handleAddCard = (card: any) => {
+    if (deckCards.length >= 8) {
+      Alert.alert('Limite atteinte', 'Le deck est complet (8 cartes maximum)');
+      return;
     }
-    
-    return panResponders.current.get(cardId);
-  };
 
-  const handleCardDrop = (cardId: string, isDroppingInDeck: boolean) => {
-    const card = [...deckCards, ...availableCards].find(c => c.id === cardId);
-    if (!card) return;
-    
-    const isInDeck = deckCards.some(c => c.id === cardId);
-    
-    if (isDroppingInDeck && !isInDeck) {
-      // Ajouter au deck
-      if (deckCards.length >= 8) {
-        Alert.alert('Deck complet', 'Un deck ne peut contenir que 8 joueurs');
-        return;
-      }
-      
-      // Vérifier les contraintes de position
-      if (!validateCardAddition(card)) {
-        return;
-      }
-      
-      setDeckCards([...deckCards, card]);
-      setAvailableCards(availableCards.filter(c => c.id !== cardId));
-      
-    } else if (!isDroppingInDeck && isInDeck) {
-      // Retirer du deck
-      setDeckCards(deckCards.filter(c => c.id !== cardId));
-      setAvailableCards([...availableCards, card]);
-    }
-  };
-
-  const validateCardAddition = (card: any): boolean => {
-    const positionCounts = {
-      gardien: deckCards.filter(c => c.position === 'gardien').length,
-      defenseur: deckCards.filter(c => c.position === 'defenseur').length,
-      milieu: deckCards.filter(c => c.position === 'milieu').length,
-      attaquant: deckCards.filter(c => c.position === 'attaquant').length,
-    };
-    
-    // Un seul gardien
-    if (card.position === 'gardien' && positionCounts.gardien >= 1) {
+    // Vérifier qu'il n'y a qu'un seul gardien
+    if (card.position === 'gardien' && deckCards.some(c => c.position === 'gardien')) {
       Alert.alert('Limite atteinte', 'Un seul gardien par deck');
-      return false;
+      return;
     }
-    
-    // Limites selon la formation
-    const limits = {
-      '2-3-2': { defenseur: 2, milieu: 3, attaquant: 2 },
-      '3-2-2': { defenseur: 3, milieu: 2, attaquant: 2 },
-      '2-2-3': { defenseur: 2, milieu: 2, attaquant: 3 },
-    };
-    
-    const limit = limits[formation];
-    if (card.position !== 'gardien' && positionCounts[card.position] >= limit[card.position]) {
-      Alert.alert('Limite atteinte', `Maximum ${limit[card.position]} ${card.position}s pour cette formation`);
-      return false;
-    }
-    
-    return true;
+
+    setDeckCards([...deckCards, card]);
+    setAvailableCards(availableCards.filter(c => c.id !== card.id));
+  };
+
+  const handleRemoveCard = (card: any) => {
+    setDeckCards(deckCards.filter(c => c.id !== card.id));
+    setAvailableCards([...availableCards, card].sort((a, b) => {
+      const positionOrder = { 'gardien': 0, 'defenseur': 1, 'milieu': 2, 'attaquant': 3 };
+      return positionOrder[a.position] - positionOrder[b.position];
+    }));
   };
 
   const handleSave = async () => {
@@ -233,15 +152,9 @@ export default function DeckBuilderScreen() {
       return;
     }
     
-    // Vérifier la composition
-    const positionCounts = {
-      gardien: deckCards.filter(c => c.position === 'gardien').length,
-      defenseur: deckCards.filter(c => c.position === 'defenseur').length,
-      milieu: deckCards.filter(c => c.position === 'milieu').length,
-      attaquant: deckCards.filter(c => c.position === 'attaquant').length,
-    };
-    
-    if (positionCounts.gardien !== 1) {
+    // Vérifier qu'il y a exactement 1 gardien
+    const gardienCount = deckCards.filter(c => c.position === 'gardien').length;
+    if (gardienCount !== 1) {
       Alert.alert('Erreur', 'Il faut exactement 1 gardien');
       return;
     }
@@ -250,14 +163,15 @@ export default function DeckBuilderScreen() {
     
     try {
       const deckData = {
-        user_id: profile?.id,
-        name: deckName.trim(),
+        name: deckName,
         cards: deckCards.map(c => c.id),
+        total_cp: deckCards.reduce((sum, card) => sum + card.cp_cost, 0),
+        user_id: profile?.id,
         is_valid: true,
       };
       
       if (route.params?.mode === 'edit' && route.params?.deckId) {
-        // Mettre à jour le deck existant
+        // Mise à jour du deck existant
         const { error } = await supabase
           .from('saved_decks')
           .update(deckData)
@@ -266,136 +180,176 @@ export default function DeckBuilderScreen() {
         if (error) throw error;
         Alert.alert('Succès', 'Deck modifié avec succès');
       } else {
-        // Créer un nouveau deck
+        // Création d'un nouveau deck
         const { error } = await supabase
           .from('saved_decks')
-          .insert(deckData);
+          .insert([deckData]);
           
         if (error) throw error;
         Alert.alert('Succès', 'Deck créé avec succès');
       }
       
       navigation.goBack();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving deck:', error);
-      Alert.alert('Erreur', 'Impossible de sauvegarder le deck');
+      Alert.alert('Erreur', error.message || 'Impossible de sauvegarder le deck');
     } finally {
       setSaving(false);
     }
   };
 
-  const renderCard = (card: any, isInDeck: boolean) => {
-    const panResponder = createPanResponder(card.id);
-    const pan = animatedValues.current.get(card.id) || new Animated.ValueXY();
+  const renderAvailableCard = ({ item }: { item: any }) => {
+    const isFiltered = selectedPosition && item.position !== selectedPosition;
     
     return (
-      <Animated.View
-        key={card.id}
-        style={[
-          styles.cardWrapper,
-          {
-            transform: [
-              { translateX: pan.x },
-              { translateY: pan.y },
-            ],
-            zIndex: draggedCard === card.id ? 1000 : 1,
-            opacity: draggedCard === card.id ? 0.8 : 1,
-          },
-        ]}
-        {...panResponder.panHandlers}
+      <TouchableOpacity
+        onPress={() => handleAddCard(item)}
+        style={[styles.cardWrapper, isFiltered && styles.cardFiltered]}
+        disabled={isFiltered}
       >
         <PlayerCard
-          player={card}
-          size="small"
-          showStats
+          player={item}
+          size="sm"
+          showStats={true}
+          showLevel={true}
+          level={item.level}
+          xp={item.xp}
         />
-      </Animated.View>
+      </TouchableOpacity>
     );
   };
 
-  const renderDeckZone = () => {
-    const positions = ['gardien', 'defenseur', 'milieu', 'attaquant'];
-    
+  const renderDeckCard = (card: any, index: number) => {
     return (
-      <Card variant="elevated" style={styles.deckZone}>
-        <View style={styles.deckHeader}>
-          <Heading level={2}>Composition du deck</Heading>
-          <View style={styles.formationSelector}>
-            {(['2-3-2', '3-2-2', '2-2-3'] as const).map((f) => (
-              <TouchableOpacity
-                key={f}
-                onPress={() => setFormation(f)}
-                style={[
-                  styles.formationButton,
-                  formation === f && styles.formationButtonActive,
-                ]}
-              >
-                <Text style={[
-                  styles.formationText,
-                  formation === f && styles.formationTextActive,
-                ]}>
-                  {f}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+      <TouchableOpacity
+        key={card.id}
+        onPress={() => handleRemoveCard(card)}
+        style={styles.deckCardItem}
+      >
+        <View style={[styles.positionIndicator, { backgroundColor: getPositionColor(card.position) }]} />
+        <Text style={styles.deckCardName} numberOfLines={1}>{card.name}</Text>
+        <View style={styles.deckCardStats}>
+          <Text style={styles.deckCardStat}>{card.shot}/{card.dribble}/{card.pass}/{card.block}</Text>
+          <Text style={styles.deckCardLevel}>Niv.{card.level}</Text>
         </View>
-        
-        <View style={styles.deckGrid}>
-          {positions.map((position) => (
-            <View key={position} style={styles.positionRow}>
-              <Typography variant="label" style={styles.positionLabel}>
-                {position.charAt(0).toUpperCase() + position.slice(1)}
-              </Typography>
-              <View style={styles.positionCards}>
-                {deckCards
-                  .filter(c => c.position === position)
-                  .map(card => renderCard(card, true))
-                }
-              </View>
-            </View>
-          ))}
-        </View>
-        
-        <Typography variant="body" color={styles.deckCount.color}>
-          {deckCards.length}/8 joueurs
-        </Typography>
-      </Card>
+        <Icon name="close" size={16} color={GameTheme.colors.textMuted} />
+      </TouchableOpacity>
     );
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={GameTheme.colors.primary} />
+      </View>
+    );
+  }
+
+  const totalCP = deckCards.reduce((sum, card) => sum + card.cp_cost, 0);
+  const positions = ['gardien', 'defenseur', 'milieu', 'attaquant'];
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <Button
-          title="Annuler"
-          variant="ghost"
-          onPress={() => navigation.goBack()}
-        />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="arrow-left" size={24} color={GameTheme.colors.text} />
+        </TouchableOpacity>
         <TextInput
-          style={styles.nameInput}
+          style={styles.deckNameInput}
+          placeholder="Nom du deck"
+          placeholderTextColor={GameTheme.colors.textMuted}
           value={deckName}
           onChangeText={setDeckName}
-          placeholder="Nom du deck"
-          placeholderTextColor={styles.placeholderColor.color}
         />
         <Button
-          title="Sauvegarder"
+          title="Sauver"
           variant="default"
+          size="sm"
           onPress={handleSave}
+          loading={saving}
           disabled={saving || deckCards.length !== 8}
         />
       </View>
-      
-      {renderDeckZone()}
-      
-      <View style={styles.availableSection}>
-        <Heading level={1}>Cartes disponibles</Heading>
-        <View style={styles.availableGrid}>
-          {availableCards.map(card => renderCard(card, false))}
+
+      {/* Main content */}
+      <View style={styles.content}>
+        {/* Deck zone */}
+        <View style={styles.deckZone}>
+          <View style={styles.deckHeader}>
+            <Typography variant="h3">Composition ({deckCards.length}/8)</Typography>
+            <Typography variant="body" color={GameTheme.colors.primary}>{totalCP} CP</Typography>
+          </View>
+          
+          <ScrollView style={styles.deckScrollView} showsVerticalScrollIndicator={false}>
+            <View style={styles.deckList}>
+              {deckCards.length === 0 ? (
+                <View style={styles.emptyDeck}>
+                  <Typography variant="body" color={GameTheme.colors.textMuted}>
+                    Touchez les cartes ci-dessous pour les ajouter
+                  </Typography>
+                </View>
+              ) : (
+                deckCards.map((card, index) => renderDeckCard(card, index))
+              )}
+              {/* Empty slots */}
+              {[...Array(Math.max(0, 8 - deckCards.length))].map((_, index) => (
+                <View key={`empty-${index}`} style={styles.emptySlot}>
+                  <Typography variant="caption" color={GameTheme.colors.textMuted}>
+                    Slot {deckCards.length + index + 1}
+                  </Typography>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+
+        {/* Position filter */}
+        <View style={styles.positionFilter}>
+          <TouchableOpacity
+            style={[styles.filterButton, !selectedPosition && styles.filterButtonActive]}
+            onPress={() => setSelectedPosition(null)}
+          >
+            <Typography variant="caption" color={!selectedPosition ? GameTheme.colors.textOnPrimary : GameTheme.colors.text}>
+              Tous
+            </Typography>
+          </TouchableOpacity>
+          {positions.map(position => (
+            <TouchableOpacity
+              key={position}
+              style={[
+                styles.filterButton,
+                selectedPosition === position && styles.filterButtonActive,
+                { borderColor: getPositionColor(position) }
+              ]}
+              onPress={() => setSelectedPosition(position)}
+            >
+              <Typography 
+                variant="caption" 
+                color={selectedPosition === position ? GameTheme.colors.textOnPrimary : GameTheme.colors.text}
+              >
+                {position.slice(0, 3).toUpperCase()}
+              </Typography>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Available cards */}
+        <View style={styles.availableZone}>
+          <Typography variant="h4" style={styles.availableTitle}>
+            Cartes disponibles ({availableCards.filter(c => !selectedPosition || c.position === selectedPosition).length})
+          </Typography>
+          <FlatList
+            data={availableCards}
+            renderItem={renderAvailableCard}
+            keyExtractor={item => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.cardsList}
+          />
         </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -404,101 +358,140 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    paddingTop: theme.theme.spacing.xl,
+    paddingHorizontal: theme.theme.spacing.lg,
+    paddingBottom: theme.theme.spacing.md,
+    gap: theme.theme.spacing.md,
   },
-  nameInput: {
+  backButton: {
+    padding: theme.theme.spacing.sm,
+  },
+  deckNameInput: {
     flex: 1,
-    marginHorizontal: theme.spacing.md,
-    padding: theme.spacing.sm,
-    borderRadius: theme.borderRadius.md,
-    backgroundColor: theme.colors.textMuted,
+    height: 40,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.theme.borderRadius.md,
+    paddingHorizontal: theme.theme.spacing.md,
+    fontSize: theme.theme.typography.fontSize.base,
     color: theme.colors.text,
-    ...GameTheme.typography.body.regular,
-    textAlign: 'center',
+    fontFamily: theme.theme.fonts.body,
   },
-  placeholderColor: {
-    color: theme.colors.textMuted,
+  content: {
+    flex: 1,
+    gap: theme.theme.spacing.md,
   },
   deckZone: {
-    margin: theme.spacing.lg,
-    minHeight: 400,
+    backgroundColor: theme.colors.card,
+    marginHorizontal: theme.theme.spacing.lg,
+    borderRadius: theme.theme.borderRadius.lg,
+    padding: theme.theme.spacing.md,
+    height: 320,
   },
   deckHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.theme.spacing.sm,
   },
-  deckTitle: {
-    ...GameTheme.typography.header.h2,
-    color: theme.colors.text,
+  deckScrollView: {
+    flex: 1,
   },
-  formationSelector: {
+  deckList: {
+    gap: 4,
+  },
+  deckCardItem: {
     flexDirection: 'row',
-    gap: theme.spacing.xs,
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.theme.borderRadius.sm,
+    padding: theme.theme.spacing.sm,
+    gap: theme.theme.spacing.xs,
   },
-  formationButton: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.sm,
+  positionIndicator: {
+    width: 4,
+    height: 20,
+    borderRadius: 2,
+  },
+  deckCardName: {
+    flex: 1,
+    fontSize: theme.theme.typography.fontSize.sm,
+    color: theme.colors.text,
+    fontFamily: theme.theme.fonts.body,
+  },
+  deckCardStats: {
+    flexDirection: 'row',
+    gap: theme.theme.spacing.sm,
+  },
+  deckCardStat: {
+    fontSize: theme.theme.typography.fontSize.xs,
+    color: theme.colors.textMuted,
+    fontFamily: theme.theme.fonts.mono,
+  },
+  deckCardLevel: {
+    fontSize: theme.theme.typography.fontSize.xs,
+    color: theme.colors.primary,
+    fontWeight: 'bold',
+  },
+  emptyDeck: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptySlot: {
+    height: 32,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.theme.borderRadius.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  extraSlot: {
+    backgroundColor: theme.colors.surface + '50',
+    borderColor: theme.colors.warning,
+  },
+  positionFilter: {
+    flexDirection: 'row',
+    paddingHorizontal: theme.theme.spacing.lg,
+    gap: theme.theme.spacing.xs,
+  },
+  filterButton: {
+    paddingHorizontal: theme.theme.spacing.md,
+    paddingVertical: theme.theme.spacing.xs,
+    borderRadius: theme.theme.borderRadius.sm,
     borderWidth: 1,
     borderColor: theme.colors.border,
   },
-  formationButtonActive: {
+  filterButtonActive: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.primary,
   },
-  formationText: {
-    ...GameTheme.typography.ui.label,
+  availableZone: {
+    flex: 1,
+    paddingLeft: theme.theme.spacing.lg,
+  },
+  availableTitle: {
+    marginBottom: theme.theme.spacing.sm,
     color: theme.colors.text,
   },
-  formationTextActive: {
-    color: '#0A0E27',
-  },
-  deckGrid: {
-    gap: theme.spacing.md,
-  },
-  positionRow: {
-    marginBottom: theme.spacing.md,
-  },
-  positionLabel: {
-    ...GameTheme.typography.ui.label,
-    color: theme.colors.textMuted,
-    marginBottom: theme.spacing.sm,
-    textTransform: 'uppercase',
-  },
-  positionCards: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.sm,
-  },
-  deckCount: {
-    textAlign: 'center',
-    ...GameTheme.typography.body.regular,
-    color: theme.colors.textMuted,
-    marginTop: theme.spacing.md,
-  },
-  availableSection: {
-    padding: theme.spacing.lg,
-  },
-  sectionTitle: {
-    ...GameTheme.typography.header.h1,
-    color: theme.colors.text,
-    marginBottom: theme.spacing.lg,
-  },
-  availableGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.sm,
+  cardsList: {
+    paddingRight: theme.theme.spacing.lg,
+    gap: theme.theme.spacing.sm,
   },
   cardWrapper: {
-    width: cardWidth,
-    marginBottom: theme.spacing.sm,
+    marginRight: theme.theme.spacing.sm,
+  },
+  cardFiltered: {
+    opacity: 0.3,
   },
 });

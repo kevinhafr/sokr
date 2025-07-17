@@ -14,14 +14,12 @@ import { AuthStackParamList } from '../navigation/types';
 import { useThemedStyles } from '../hooks/useThemedStyles';
 import { Button } from '../components/ui/Button';
 import { supabase } from '../services/supabase';
-import { useTheme } from '../contexts/ThemeContext';
 
 type RegisterScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Register'>;
 
 export default function RegisterScreen() {
   const navigation = useNavigation<RegisterScreenNavigationProp>();
   const styles = useThemedStyles(createStyles);
-  const { isDark } = useTheme();
   const [email, setEmail] = useState(__DEV__ ? 'kevin@ha.fr' : '');
   const [password, setPassword] = useState(__DEV__ ? '123456' : '');
   const [confirmPassword, setConfirmPassword] = useState(__DEV__ ? '123456' : '');
@@ -110,10 +108,7 @@ export default function RegisterScreen() {
     >
       <View style={styles.content}>
         <Image 
-          source={isDark 
-            ? require('@/assets/logos/white_logo_transparent_background.png')
-            : require('@/assets/logos/dark_logo_transparent_background.png')
-          }
+          source={require('@/assets/logos/white_logo_transparent_background.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -219,7 +214,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
   subtitle: {
     fontSize: theme.theme.typography.fontSize.lg,
     color: theme.colors.textMuted,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
     textAlign: 'center' as const,
     marginBottom: theme.theme.spacing.xxl,
   },
@@ -232,7 +227,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.theme.radius.lg,
+    borderRadius: theme.theme.borderRadius.lg,
     paddingHorizontal: theme.theme.spacing.md,
     marginBottom: theme.theme.spacing.md,
     borderWidth: 1,
@@ -243,7 +238,7 @@ const createStyles = (theme: ReturnType<typeof import('../hooks/useThemedStyles'
     paddingVertical: theme.theme.spacing.md,
     color: theme.colors.text,
     fontSize: theme.theme.typography.fontSize.base,
-    fontFamily: theme.theme.fonts.geist,
+    fontFamily: theme.theme.fonts.body,
   },
   button: {
     marginTop: theme.theme.spacing.sm,
